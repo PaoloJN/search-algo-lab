@@ -7,10 +7,10 @@ import {
     EraserIcon,
     FlagIcon,
     GithubIcon,
+    GoalIcon,
     InfoIcon,
     PlayIcon,
     RotateCcwIcon,
-    TargetIcon,
     type LucideIcon,
 } from "lucide-react";
 
@@ -18,7 +18,9 @@ const GridView = dynamic(() => import("@/components/grid/Grid"), { ssr: false })
 
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
     Dialog,
     DialogContent,
@@ -27,6 +29,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 import {
     Select,
     SelectContent,
@@ -56,8 +59,11 @@ import {
 import { algorithmNames } from "@/utils/algorithms";
 import { mazeNames } from "@/utils/mazes";
 
-const GRID_SIZES: GridSize[] = ["Small", "Medium", "Large"];
+const GRID_SIZES: GridSize[] = ["Small", "Large"];
 const SPEEDS: SpeedSetting[] = ["Slow", "Normal", "Fast", "Instant"];
+
+const FLOATING_CARD =
+    "absolute z-10 gap-0 py-0 bg-card/80 backdrop-blur-md backdrop-saturate-150 shadow-lg";
 
 export default function Page() {
     return (
@@ -84,20 +90,18 @@ function ControlPanel() {
     const meta = ALGORITHM_META[algorithm];
 
     return (
-        <Panel className="top-5 left-5 w-[296px] p-[18px] flex-col gap-3">
-            <header className="flex items-start justify-between gap-2.5">
+        <Card className={cn(FLOATING_CARD, "top-5 left-5 w-72 p-4")}>
+            <header className="flex items-start justify-between gap-3">
                 <div>
-                    <div className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--fg)]">
-                        search-algo-lab
-                    </div>
-                    <div className="mt-[3px] text-xs text-[var(--fg-muted)]">
+                    <div className="text-sm font-semibold tracking-tight">search-algo-lab</div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
                         Pathfinding visualizer
-                    </div>
+                    </p>
                 </div>
                 <StatusPill />
             </header>
 
-            <Divider />
+            <Separator className="my-4" />
 
             <Section title="Search">
                 <Field label="Algorithm">
@@ -110,19 +114,17 @@ function ControlPanel() {
                 </Field>
 
                 <div className="flex flex-col gap-1.5">
-                    <span
+                    <Badge
+                        variant={meta.guarantees ? "default" : "secondary"}
                         className={cn(
-                            "inline-flex h-[19px] items-center self-start rounded-[var(--radius-sm)] px-[7px] font-mono text-[10px] font-semibold uppercase tracking-[0.04em]",
-                            meta.guarantees
-                                ? "bg-[var(--success-soft)] text-[var(--success)]"
-                                : "border border-[var(--border)] bg-[var(--bg-overlay)] text-[var(--fg-subtle)]",
+                            "self-start rounded-sm font-mono text-[10px] uppercase tracking-wider",
+                            meta.guarantees &&
+                                "bg-success/15 text-success border border-success/30",
                         )}
                     >
                         {meta.guarantees ? "shortest path" : "not guaranteed"}
-                    </span>
-                    <p className="text-[11.5px] leading-[1.45] text-[var(--fg-subtle)]">
-                        {meta.note}
-                    </p>
+                    </Badge>
+                    <p className="text-xs leading-snug text-muted-foreground">{meta.note}</p>
                 </div>
 
                 <Field label="Maze">
@@ -136,7 +138,7 @@ function ControlPanel() {
                 </Field>
             </Section>
 
-            <Divider />
+            <Separator className="my-4" />
 
             <Section title="Display">
                 <Field label="Grid size">
@@ -162,7 +164,7 @@ function ControlPanel() {
                     />
                 </Field>
             </Section>
-        </Panel>
+        </Card>
     );
 }
 
@@ -170,7 +172,7 @@ function ControlPanel() {
 
 function RightRail() {
     return (
-        <div className="absolute top-5 right-5 z-[5] flex w-[216px] flex-col gap-3 max-[760px]:hidden">
+        <div className="absolute top-5 right-5 z-10 flex w-56 flex-col gap-3 max-[760px]:hidden">
             <MetricsPanel />
             <Legend />
         </div>
@@ -189,15 +191,13 @@ function MetricsPanel() {
             : null;
 
     return (
-        <Panel className="static p-4 flex-col gap-0">
-            <div className="mb-[14px] flex items-center justify-between">
+        <Card className={cn(FLOATING_CARD, "static p-4")}>
+            <div className="mb-3 flex items-center justify-between">
                 <Eyebrow>Run</Eyebrow>
-                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--fg)]">
-                    {meta.label}
-                </span>
+                <span className="text-xs font-semibold">{meta.label}</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--border-subtle)]">
+            <div className="grid grid-cols-2 gap-px overflow-hidden rounded-md border bg-border">
                 <Stat label="Explored" value={fmt(metrics.explored)} sub="cells" />
                 <Stat label="Frontier" value={fmt(metrics.frontierSize)} sub="in queue" />
                 <Stat
@@ -213,17 +213,15 @@ function MetricsPanel() {
                 />
             </div>
 
-            <div className="mt-3 min-h-[30px] text-[11px] leading-[1.45] text-[var(--fg-muted)]">
+            <p className="mt-3 min-h-[30px] text-[11px] leading-snug text-muted-foreground">
                 {status === "done" && eff != null && (
                     <span>
-                        <span className="font-mono font-semibold text-[var(--cell-path)]">
-                            {eff}%
-                        </span>{" "}
-                        of explored cells were on the path
+                        <span className="font-mono font-semibold text-primary">{eff}%</span> of
+                        explored cells were on the path
                     </span>
                 )}
                 {status === "nopath" && (
-                    <span className="text-[var(--danger)]">
+                    <span className="text-destructive">
                         Goal is unreachable — clear some walls
                     </span>
                 )}
@@ -231,8 +229,8 @@ function MetricsPanel() {
                 {(status === "idle" || status === "mazing") && (
                     <span>Press Start to run the search</span>
                 )}
-            </div>
-        </Panel>
+            </p>
+        </Card>
     );
 }
 
@@ -248,20 +246,20 @@ function Stat({
     accent?: boolean;
 }) {
     return (
-        <div className="bg-[oklch(0.155_0.004_250/0.6)] px-3 py-2.5 dark:bg-[oklch(0.155_0.004_250/0.6)]">
-            <div className="text-[10px] font-medium uppercase tracking-[0.06em] text-[var(--fg-subtle)]">
+        <div className="bg-card px-3 py-2.5">
+            <div className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                 {label}
             </div>
             <div
                 className={cn(
-                    "mt-[5px] font-mono text-[21px] leading-[1.1] font-semibold tabular-nums text-[var(--fg)]",
-                    accent && "text-[var(--cell-path)]",
+                    "mt-1 font-mono text-xl leading-tight font-semibold tabular-nums",
+                    accent && "text-primary",
                 )}
             >
                 {value}
             </div>
             {sub && (
-                <div className="mt-1 font-mono text-[10px] text-[var(--fg-subtle)]">{sub}</div>
+                <div className="mt-0.5 font-mono text-[10px] text-muted-foreground">{sub}</div>
             )}
         </div>
     );
@@ -273,21 +271,21 @@ function fmt(n: number | null) {
 
 function Legend() {
     return (
-        <Panel className="static p-4 flex-col gap-0">
+        <Card className={cn(FLOATING_CARD, "static p-4")}>
             <Eyebrow>Legend</Eyebrow>
-            <div className="my-3 grid grid-cols-2 gap-x-3 gap-y-[9px]">
-                <LegendRow color="var(--cell-start)" label="Start" icon={FlagIcon} />
-                <LegendRow color="var(--cell-end)" label="Goal" icon={TargetIcon} />
+            <div className="my-3 grid grid-cols-2 gap-x-3 gap-y-2">
                 <LegendRow color="var(--cell-frontier)" label="Frontier" />
                 <LegendRow color="var(--cell-visited)" label="Visited" />
                 <LegendRow color="var(--cell-path)" label="Path" />
                 <LegendRow color="var(--cell-wall)" label="Wall" />
             </div>
-            <div className="border-t border-[var(--border-subtle)] pt-[11px] text-[11px] leading-[1.5] text-[var(--fg-subtle)]">
-                Click + drag the grid to draw walls · drag <FlagIcon className="inline h-[11px] w-[11px] align-[-1px]" /> or{" "}
-                <TargetIcon className="inline h-[11px] w-[11px] align-[-1px]" /> to move
-            </div>
-        </Panel>
+            <Separator />
+            <p className="pt-3 text-[11px] leading-snug text-muted-foreground">
+                Click + drag to draw walls · drag{" "}
+                <FlagIcon className="inline h-3 w-3 align-text-bottom" /> or{" "}
+                <GoalIcon className="inline h-3 w-3 align-text-bottom" /> to move
+            </p>
+        </Card>
     );
 }
 
@@ -301,9 +299,9 @@ function LegendRow({
     icon?: LucideIcon;
 }) {
     return (
-        <div className="flex items-center gap-2 text-xs text-[var(--fg-muted)]">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <span
-                className="flex h-4 w-4 flex-none items-center justify-center rounded-[var(--radius-sm)] shadow-[inset_0_0_0_1px_oklch(1_0_0_/_0.06)]"
+                className="flex h-3.5 w-3.5 flex-none items-center justify-center rounded-sm ring-1 ring-inset ring-foreground/10"
                 style={{ backgroundColor: color }}
             >
                 {Icon && <Icon className="h-2.5 w-2.5 text-white" strokeWidth={3} />}
@@ -332,64 +330,70 @@ function ActionBar() {
                 : "Start";
 
     return (
-        <div className="absolute bottom-7 left-1/2 z-[6] -translate-x-1/2">
-            <div className="flex items-center gap-1.5 rounded-[14px] border border-[var(--border)] bg-[oklch(0.175_0.004_250/0.9)] p-[7px] shadow-[0_1px_0_oklch(1_0_0_/_0.04)_inset,_0_12px_32px_rgb(0_0_0_/_0.18)] backdrop-blur-md">
-                <Button
-                    size="default"
-                    disabled={isBusy}
-                    onClick={() => setStartSignal((s) => s + 1)}
-                    className="min-w-[130px]"
-                >
-                    <PlayIcon className="h-4 w-4" />
-                    {primaryLabel}
-                </Button>
+        <Card
+            className={cn(
+                FLOATING_CARD,
+                "bottom-7 left-1/2 -translate-x-1/2 flex-row items-center gap-1.5 p-1.5",
+            )}
+        >
+            <Button
+                disabled={isBusy}
+                onClick={() => setStartSignal((s) => s + 1)}
+                className="min-w-[130px]"
+            >
+                <PlayIcon className="h-4 w-4" />
+                {primaryLabel}
+            </Button>
 
-                <Separator />
+            <Separator orientation="vertical" className="h-5! mx-0.5" />
 
-                <Button
-                    size="default"
-                    variant="ghost"
-                    disabled={isBusy}
-                    onClick={() => setClearPathsSignal((s) => s + 1)}
-                >
-                    <EraserIcon className="h-4 w-4" />
-                    Clear paths
-                </Button>
-                <Button
-                    size="default"
-                    variant="ghost"
-                    disabled={isBusy}
-                    onClick={() => setResetSignal((s) => s + 1)}
-                >
-                    <RotateCcwIcon className="h-4 w-4" />
-                    Reset
-                </Button>
-            </div>
-        </div>
+            <Button
+                variant="ghost"
+                disabled={isBusy}
+                onClick={() => setClearPathsSignal((s) => s + 1)}
+            >
+                <EraserIcon className="h-4 w-4" />
+                Clear paths
+            </Button>
+            <Button
+                variant="ghost"
+                disabled={isBusy}
+                onClick={() => setResetSignal((s) => s + 1)}
+            >
+                <RotateCcwIcon className="h-4 w-4" />
+                Reset
+            </Button>
+        </Card>
     );
-}
-
-function Separator() {
-    return <span className="mx-0.5 h-[22px] w-px bg-[var(--border)]" />;
 }
 
 /* ----------------------------- Utility dock ----------------------------- */
 
 function UtilityDock() {
     return (
-        <div className="absolute right-5 bottom-7 z-[6] flex items-center gap-1 rounded-[12px] border border-[var(--border)] bg-[oklch(0.175_0.004_250/0.86)] p-1.5 shadow-lg backdrop-blur-md">
+        <Card
+            className={cn(
+                FLOATING_CARD,
+                "right-5 bottom-7 flex-row items-center gap-0.5 p-1.5",
+            )}
+        >
             <ThemeToggle />
-            <a
-                href="https://github.com/PaoloJN/search-algo-lab"
-                target="_blank"
-                rel="noopener noreferrer"
+            <Button
+                asChild
+                size="icon"
+                variant="ghost"
                 aria-label="View source on GitHub"
-                className="inline-flex h-[34px] w-[34px] items-center justify-center rounded-[var(--radius-md)] text-[var(--fg-subtle)] transition-colors hover:bg-[var(--bg-overlay)] hover:text-[var(--fg)]"
             >
-                <GithubIcon className="h-[17px] w-[17px]" />
-            </a>
+                <a
+                    href="https://github.com/PaoloJN/search-algo-lab"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <GithubIcon className="h-4 w-4" />
+                </a>
+            </Button>
             <HelpDialog />
-        </div>
+        </Card>
     );
 }
 
@@ -397,37 +401,47 @@ function HelpDialog() {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <button
-                    aria-label="About and shortcuts"
-                    className="inline-flex h-[34px] w-[34px] items-center justify-center rounded-[var(--radius-md)] text-[var(--fg-subtle)] transition-colors hover:bg-[var(--bg-overlay)] hover:text-[var(--fg)]"
-                >
-                    <InfoIcon className="h-[17px] w-[17px]" />
-                </button>
+                <Button size="icon" variant="ghost" aria-label="About and shortcuts">
+                    <InfoIcon className="h-4 w-4" />
+                </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>How to use</DialogTitle>
-                    <DialogDescription>A pathfinding and maze-generation visualizer.</DialogDescription>
+                    <DialogDescription>
+                        A pathfinding and maze-generation visualizer.
+                    </DialogDescription>
                 </DialogHeader>
 
                 <div className="flex flex-col gap-4 text-sm">
-                    <ul className="space-y-2 text-[var(--fg-muted)]">
+                    <ul className="space-y-2 text-muted-foreground">
                         <li>
-                            <span className="font-medium text-[var(--fg)]">Left-click + drag</span> the grid to draw walls.{" "}
-                            <span className="font-medium text-[var(--fg)]">Right-click</span> to erase.
+                            <span className="font-medium text-foreground">
+                                Left-click + drag
+                            </span>{" "}
+                            the grid to draw walls.{" "}
+                            <span className="font-medium text-foreground">Right-click</span> to
+                            erase.
                         </li>
                         <li>
-                            <span className="font-medium text-[var(--fg)]">Drag the flag or target</span> icons to move start and goal.
+                            <span className="font-medium text-foreground">
+                                Drag the flag or target
+                            </span>{" "}
+                            icons to move start and goal.
                         </li>
                         <li>
-                            Pick an algorithm and press <span className="font-medium text-[var(--fg)]">Start</span>. Optionally select a maze first.
+                            Pick an algorithm and press{" "}
+                            <span className="font-medium text-foreground">Start</span>.
+                            Optionally select a maze first.
                         </li>
                         <li>
                             After a run, dragging start/goal re-runs the algorithm instantly.
                         </li>
                     </ul>
 
-                    <div className="border-t border-[var(--border-subtle)] pt-4">
+                    <Separator />
+
+                    <div>
                         <Eyebrow>Keyboard shortcuts</Eyebrow>
                         <div className="mt-2 flex flex-col gap-1.5">
                             <KbdRow label="Start / re-run" keys={["Space"]} />
@@ -444,16 +458,16 @@ function HelpDialog() {
 
 function KbdRow({ label, keys }: { label: string; keys: string[] }) {
     return (
-        <div className="flex items-center justify-between py-1 text-[12.5px] text-[var(--fg-muted)]">
+        <div className="flex items-center justify-between py-1 text-sm text-muted-foreground">
             <span>{label}</span>
             <span className="flex gap-1">
                 {keys.map((k) => (
-                    <span
+                    <kbd
                         key={k}
-                        className="min-w-[22px] rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--bg-inset)] px-[7px] py-[3px] text-center font-mono text-[11px] text-[var(--fg)]"
+                        className="min-w-[22px] rounded border bg-muted px-1.5 py-0.5 text-center font-mono text-xs text-foreground"
                     >
                         {k}
-                    </span>
+                    </kbd>
                 ))}
             </span>
         </div>
@@ -472,7 +486,13 @@ function KeyboardShortcuts() {
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
             const target = e.target as HTMLElement | null;
-            if (target && (target.tagName === "INPUT" || target.tagName === "SELECT" || target.isContentEditable)) {
+            if (
+                target &&
+                (target.tagName === "INPUT" ||
+                    target.tagName === "SELECT" ||
+                    target.tagName === "TEXTAREA" ||
+                    target.isContentEditable)
+            ) {
                 return;
             }
             if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -512,59 +532,47 @@ const STATUS_LABEL: Record<RunStatus, string> = {
     nopath: "No path",
 };
 
-const STATUS_TONE: Record<RunStatus, string> = {
-    idle: "border-[var(--border)] bg-[var(--bg-inset)] text-[var(--fg-muted)]",
-    mazing:
-        "border-[oklch(0.78_0.13_75/0.4)] bg-[var(--warning-soft)] text-[var(--warning)]",
-    running:
-        "border-[oklch(0.68_0.22_25/0.4)] bg-[oklch(0.68_0.22_25/0.12)] text-[var(--accent-soft-fg)]",
-    done: "border-[oklch(0.72_0.15_155/0.4)] bg-[var(--success-soft)] text-[var(--success)]",
-    nopath: "border-[oklch(0.68_0.19_25/0.4)] bg-[var(--danger-soft)] text-[var(--danger)]",
-};
-
-const STATUS_DOT: Record<RunStatus, string> = {
-    idle: "bg-[var(--fg-subtle)]",
-    mazing: "bg-[var(--warning)] status-pulse",
-    running: "bg-[var(--accent)] status-pulse",
-    done: "bg-[var(--success)]",
-    nopath: "bg-[var(--danger)]",
+const STATUS_STYLES: Record<RunStatus, { badge: string; dot: string }> = {
+    idle: {
+        badge: "bg-muted text-muted-foreground border-border",
+        dot: "bg-muted-foreground/60",
+    },
+    mazing: {
+        badge: "bg-warning/15 text-warning border-warning/30",
+        dot: "bg-warning status-pulse",
+    },
+    running: {
+        badge: "bg-primary/15 text-primary border-primary/30",
+        dot: "bg-primary status-pulse",
+    },
+    done: {
+        badge: "bg-success/15 text-success border-success/30",
+        dot: "bg-success",
+    },
+    nopath: {
+        badge: "bg-destructive/15 text-destructive border-destructive/30",
+        dot: "bg-destructive",
+    },
 };
 
 function StatusPill() {
     const status = useAtomValue(statusAtom);
+    const styles = STATUS_STYLES[status];
     return (
-        <span
+        <Badge
+            variant="outline"
             className={cn(
-                "inline-flex h-[22px] items-center gap-1.5 whitespace-nowrap rounded-full border px-2 py-0 font-mono text-[10px] font-semibold uppercase tracking-[0.06em]",
-                STATUS_TONE[status],
+                "rounded-full border font-mono text-[10px] uppercase tracking-wider gap-1.5 px-2",
+                styles.badge,
             )}
         >
-            <span className={cn("h-1.5 w-1.5 rounded-full", STATUS_DOT[status])} />
+            <span className={cn("h-1.5 w-1.5 rounded-full", styles.dot)} />
             {STATUS_LABEL[status]}
-        </span>
+        </Badge>
     );
 }
 
 /* ----------------------------- Primitives ----------------------------- */
-
-function Panel({
-    className,
-    children,
-}: {
-    className?: string;
-    children: React.ReactNode;
-}) {
-    return (
-        <div
-            className={cn(
-                "absolute z-[5] flex rounded-[var(--radius-xl)] border border-[var(--border)] bg-[oklch(0.175_0.004_250/0.86)] shadow-[0_1px_0_oklch(1_0_0_/_0.04)_inset,_0_8px_24px_rgb(0_0_0_/_0.12)] backdrop-blur-md backdrop-saturate-[1.2]",
-                className,
-            )}
-        >
-            {children}
-        </div>
-    );
-}
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
     return (
@@ -577,20 +585,16 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
     return (
-        <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--fg-subtle)]">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
             {children}
         </span>
     );
 }
 
-function Divider() {
-    return <div className="my-2 h-px bg-[var(--border-subtle)]" />;
-}
-
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
     return (
         <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-[var(--fg-muted)]">{label}</span>
+            <span className="text-xs font-medium text-muted-foreground">{label}</span>
             {children}
         </label>
     );
@@ -611,7 +615,7 @@ function DSSelect({
 }) {
     return (
         <Select value={value} onValueChange={onValueChange} disabled={disabled}>
-            <SelectTrigger className="h-9 w-full border-[var(--border-strong)] bg-[var(--bg-inset)] text-[13px] font-medium">
+            <SelectTrigger className="h-9 w-full">
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
-import { FlagIcon, TargetIcon } from "lucide-react";
+import { FlagIcon, GoalIcon } from "lucide-react";
 
 import {
     algorithmAtom,
@@ -25,18 +25,14 @@ import { mazes } from "@/utils/mazes";
 import { createNode, type Grid, type Node, type NodeRefMap } from "@/models/Node";
 
 const TARGET_CELL_PX: Record<GridSize, number> = {
-    Small: 30,
-    Medium: 22,
-    Large: 14,
+    Small: 22,
+    Large: 36,
 };
 
 function dimsForViewport(target: number) {
     if (typeof window === "undefined") return { width: 60, height: 30 };
-    // Reserve space for the floating UI so endpoints don't end up under panels.
-    const w = Math.max(0, window.innerWidth - 332 - 252);
-    const h = Math.max(0, window.innerHeight - 20 - 150);
-    const width = Math.max(10, Math.floor(w / target));
-    const height = Math.max(6, Math.floor(h / target));
+    const width = Math.max(10, Math.round(window.innerWidth / target));
+    const height = Math.max(6, Math.round(window.innerHeight / target));
     return { width, height };
 }
 
@@ -137,10 +133,7 @@ export default function GridView() {
         isBusy,
     };
 
-    const emitMetrics = useCallback(
-        (m: Metrics) => setMetrics(m),
-        [setMetrics],
-    );
+    const emitMetrics = useCallback((m: Metrics) => setMetrics(m), [setMetrics]);
 
     const resetGrid = useCallback(
         (full: boolean) => {
@@ -425,26 +418,23 @@ export default function GridView() {
                         (tempNode?.x === node.x &&
                             tempNode?.y === node.y &&
                             draggingNode === "end");
-                    const classes = [
-                        "grid-node",
-                        showStart ? "start-node" : "",
-                        showEnd ? "end-node" : "",
-                    ]
-                        .filter(Boolean)
-                        .join(" ");
                     return (
                         <div
                             key={node.id}
                             ref={(el) => {
                                 gridNodeRefs.current[node.id] = el;
                             }}
-                            className={classes}
+                            className="grid-node"
                             onMouseDown={(e) => handleMouseDown(y, x, e)}
                             onMouseEnter={() => handleMouseEnter(y, x)}
                             onMouseLeave={() => handleMouseLeave(y, x)}
                         >
-                            {showStart && <FlagIcon className="h-[55%] w-[55%]" strokeWidth={2.5} />}
-                            {showEnd && <TargetIcon className="h-[60%] w-[60%]" strokeWidth={2.5} />}
+                            {showStart && (
+                                <FlagIcon className="text-foreground h-[55%] w-[55%]" />
+                            )}
+                            {showEnd && (
+                                <GoalIcon className="text-foreground h-[60%] w-[60%]" />
+                            )}
                         </div>
                     );
                 }),

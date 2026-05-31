@@ -12,7 +12,7 @@ export type MazeName =
     | "Hunt And Kill"
     | "Random Map";
 
-export type GridSize = "Small" | "Medium" | "Large";
+export type GridSize = "Small" | "Large";
 
 export type SpeedSetting = "Slow" | "Normal" | "Fast" | "Instant";
 
@@ -56,7 +56,7 @@ export const ALGORITHM_META: Record<
 export const algorithmAtom = atom<AlgorithmName>("A*");
 export const mazeAtom = atom<MazeName | null>(null);
 
-export const gridSizeAtom = atom<GridSize>("Medium");
+export const gridSizeAtom = atom<GridSize>("Large");
 export const mazeSpeedAtom = atom<SpeedSetting>("Fast");
 export const pathSpeedAtom = atom<SpeedSetting>("Normal");
 
