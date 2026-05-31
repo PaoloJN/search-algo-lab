@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
-import { FlagIcon, GoalIcon } from "lucide-react";
+import { FlagIcon, TargetIcon } from "lucide-react";
 
 import {
     algorithmAtom,
@@ -13,29 +13,30 @@ import {
     startSignalAtom,
     resetSignalAtom,
     clearPathsSignalAtom,
-    isAlgorithmRunningAtom,
-    isAlgorithmDoneAtom,
-    isMazeRunningAtom,
+    statusAtom,
+    metricsAtom,
     isBusyAtom,
     SPEED_MS,
     type GridSize,
+    type Metrics,
 } from "@/atoms/selections";
 import { algorithms } from "@/utils/algorithms";
 import { mazes } from "@/utils/mazes";
 import { createNode, type Grid, type Node, type NodeRefMap } from "@/models/Node";
 
-// Target cell size in pixels for each grid setting.
-// "Small" = small cells (dense grid). "Large" = large cells (sparse grid).
-// Cell count is derived from the viewport so the grid always fills the page.
 const TARGET_CELL_PX: Record<GridSize, number> = {
-    Small: 22,
-    Large: 36,
+    Small: 30,
+    Medium: 22,
+    Large: 14,
 };
 
 function dimsForViewport(target: number) {
     if (typeof window === "undefined") return { width: 60, height: 30 };
-    const width = Math.max(10, Math.round(window.innerWidth / target));
-    const height = Math.max(6, Math.round(window.innerHeight / target));
+    // Reserve space for the floating UI so endpoints don't end up under panels.
+    const w = Math.max(0, window.innerWidth - 332 - 252);
+    const h = Math.max(0, window.innerHeight - 20 - 150);
+    const width = Math.max(10, Math.floor(w / target));
+    const height = Math.max(6, Math.floor(h / target));
     return { width, height };
 }
 
@@ -75,11 +76,10 @@ export default function GridView() {
     const resetSignal = useAtomValue(resetSignalAtom);
     const clearPathsSignal = useAtomValue(clearPathsSignalAtom);
 
-    const setIsAlgorithmRunning = useSetAtom(isAlgorithmRunningAtom);
-    const setIsMazeRunning = useSetAtom(isMazeRunningAtom);
-    const setIsAlgorithmDone = useSetAtom(isAlgorithmDoneAtom);
+    const setStatus = useSetAtom(statusAtom);
+    const setMetrics = useSetAtom(metricsAtom);
     const isBusy = useAtomValue(isBusyAtom);
-    const isAlgorithmDone = useAtomValue(isAlgorithmDoneAtom);
+    const status = useAtomValue(statusAtom);
 
     const [gridState, setGridState] = useState(() => {
         const dims = dimsForViewport(TARGET_CELL_PX[gridSize]);
@@ -121,7 +121,7 @@ export default function GridView() {
         algorithm,
         pathSpeed,
         mazeSpeed,
-        isAlgorithmDone,
+        status,
         draggingNode,
         isBusy,
     });
@@ -132,10 +132,15 @@ export default function GridView() {
         algorithm,
         pathSpeed,
         mazeSpeed,
-        isAlgorithmDone,
+        status,
         draggingNode,
         isBusy,
     };
+
+    const emitMetrics = useCallback(
+        (m: Metrics) => setMetrics(m),
+        [setMetrics],
+    );
 
     const resetGrid = useCallback(
         (full: boolean) => {
@@ -161,9 +166,10 @@ export default function GridView() {
                     if (full) el.classList.remove("wall-node");
                 }
             }
-            setIsAlgorithmDone(false);
+            setStatus("idle");
+            setMetrics({ explored: 0, frontierSize: 0, pathLen: null, elapsedMs: null });
         },
-        [setIsAlgorithmDone],
+        [setStatus, setMetrics],
     );
 
     useEffect(() => {
@@ -173,30 +179,28 @@ export default function GridView() {
         (async () => {
             const { gridState, startPos, endPos, algorithm, pathSpeed } = latest.current;
             resetGrid(false);
-            setIsAlgorithmRunning(true);
-            setIsAlgorithmDone(false);
+            setStatus("running");
+            setMetrics({ explored: 0, frontierSize: 0, pathLen: null, elapsedMs: 0 });
 
             const fn = algorithms[algorithm];
             const ms = SPEED_MS[pathSpeed];
-            const ok = await fn(
+            const result = await fn(
                 gridState.grid[startPos.y][startPos.x],
                 gridState.grid[endPos.y][endPos.x],
                 gridState.grid,
                 gridNodeRefs,
                 ms,
+                emitMetrics,
             );
 
             if (cancelled) return;
-            if (ok) {
-                setIsAlgorithmRunning(false);
-                setIsAlgorithmDone(true);
-            }
+            setStatus(result.found ? "done" : "nopath");
         })();
 
         return () => {
             cancelled = true;
         };
-    }, [startSignal, resetGrid, setIsAlgorithmRunning, setIsAlgorithmDone]);
+    }, [startSignal, resetGrid, setStatus, setMetrics, emitMetrics]);
 
     useEffect(() => {
         if (resetSignal === 0) return;
@@ -215,26 +219,20 @@ export default function GridView() {
         (async () => {
             const { gridState, mazeSpeed } = latest.current;
             resetGrid(true);
-            setIsMazeRunning(true);
+            setStatus("mazing");
 
             const fn = mazes[maze];
             const ms = SPEED_MS[mazeSpeed];
-            const ok = await fn(
-                gridState.grid,
-                gridNodeRefs,
-                gridState.width,
-                gridState.height,
-                ms,
-            );
+            await fn(gridState.grid, gridNodeRefs, gridState.width, gridState.height, ms);
 
             if (cancelled) return;
-            if (ok) setIsMazeRunning(false);
+            setStatus("idle");
         })();
 
         return () => {
             cancelled = true;
         };
-    }, [maze, resetGrid, setIsMazeRunning]);
+    }, [maze, resetGrid, setStatus]);
 
     const rebuildForSize = useCallback(
         (size: GridSize) => {
@@ -248,9 +246,10 @@ export default function GridView() {
             });
             setStartPos(built.start);
             setEndPos(built.end);
-            setIsAlgorithmDone(false);
+            setStatus("idle");
+            setMetrics({ explored: 0, frontierSize: 0, pathLen: null, elapsedMs: null });
         },
-        [setIsAlgorithmDone],
+        [setStatus, setMetrics],
     );
 
     const didMountRef = useRef(false);
@@ -262,7 +261,6 @@ export default function GridView() {
         rebuildForSize(gridSize);
     }, [gridSize, rebuildForSize]);
 
-    // Debounced viewport resize so cell density stays roughly consistent across viewport sizes.
     useEffect(() => {
         let timer: ReturnType<typeof setTimeout> | null = null;
         const onResize = () => {
@@ -346,7 +344,7 @@ export default function GridView() {
             handleNodeClick(row, col, mouseButton);
             return;
         }
-        const { gridState, startPos, endPos, isAlgorithmDone } = latest.current;
+        const { gridState, startPos, endPos, status } = latest.current;
         const node = gridState.grid[row][col];
         if (
             (node.isStart && draggingNode === "end") ||
@@ -365,7 +363,7 @@ export default function GridView() {
         if (draggingNode === "start") gridState.grid[startPos.y][startPos.x].isStart = false;
         if (draggingNode === "end") gridState.grid[endPos.y][endPos.x].isEnd = false;
 
-        if (isAlgorithmDone) void reRunForDrag(row, col);
+        if (status === "done" || status === "nopath") void reRunForDrag(row, col);
     };
 
     const handleMouseLeave = (row: number, col: number) => {
@@ -427,19 +425,26 @@ export default function GridView() {
                         (tempNode?.x === node.x &&
                             tempNode?.y === node.y &&
                             draggingNode === "end");
+                    const classes = [
+                        "grid-node",
+                        showStart ? "start-node" : "",
+                        showEnd ? "end-node" : "",
+                    ]
+                        .filter(Boolean)
+                        .join(" ");
                     return (
                         <div
                             key={node.id}
                             ref={(el) => {
                                 gridNodeRefs.current[node.id] = el;
                             }}
-                            className="grid-node"
+                            className={classes}
                             onMouseDown={(e) => handleMouseDown(y, x, e)}
                             onMouseEnter={() => handleMouseEnter(y, x)}
                             onMouseLeave={() => handleMouseLeave(y, x)}
                         >
-                            {showStart && <FlagIcon className="text-foreground p-[15%]" />}
-                            {showEnd && <GoalIcon className="text-foreground p-[15%]" />}
+                            {showStart && <FlagIcon className="h-[55%] w-[55%]" strokeWidth={2.5} />}
+                            {showEnd && <TargetIcon className="h-[60%] w-[60%]" strokeWidth={2.5} />}
                         </div>
                     );
                 }),

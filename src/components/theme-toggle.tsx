@@ -3,7 +3,6 @@
 import { useTheme } from "next-themes";
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -18,10 +17,13 @@ export function ThemeToggle() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button size="icon" variant="outline" className="shadow-lg" aria-label="Theme">
-                    <SunIcon className="h-4 w-4 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                    <MoonIcon className="absolute h-4 w-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                </Button>
+                <button
+                    aria-label="Theme"
+                    className="inline-flex h-[34px] w-[34px] items-center justify-center rounded-[var(--radius-md)] text-[var(--fg-subtle)] transition-colors hover:bg-[var(--bg-overlay)] hover:text-[var(--fg)]"
+                >
+                    <SunIcon className="h-[17px] w-[17px] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                    <MoonIcon className="absolute h-[17px] w-[17px] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 <DropdownMenuGroup>

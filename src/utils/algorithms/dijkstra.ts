@@ -1,9 +1,11 @@
 import type { MutableRefObject } from "react";
 import type { Grid, Node, NodeRefMap } from "@/models/Node";
+import type { Metrics } from "@/atoms/selections";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 type NodeMark = "open" | "closed" | "path";
+type MetricsReporter = (m: Metrics) => void;
 
 export default async function dijkstra(
     startNode: Node,
@@ -11,7 +13,8 @@ export default async function dijkstra(
     grid: Grid,
     gridNodeRefs: MutableRefObject<NodeRefMap>,
     speed: number,
-): Promise<boolean> {
+    onMetrics?: MetricsReporter,
+): Promise<{ found: boolean; pathLen: number }> {
     const updateGrid = (node: Node, type: NodeMark) => {
         if ((node.isStart || node.isEnd) && type !== "path") return;
         const el = gridNodeRefs.current[node.id];
@@ -38,36 +41,43 @@ export default async function dijkstra(
         }
     };
 
-    async function reconstructPath(end: Node) {
-        const path: Node[] = [];
-        let current: Node | null = end;
-        while (current !== null) {
-            path.unshift(current);
-            current = current.previousNode;
-        }
-
-        for (const node of path) {
-            if (speed !== 0) await sleep(50);
-            updateGrid(node, "path");
-        }
-    }
+    const t0 = performance.now();
+    let explored = 0;
+    let frontierSize = 0;
 
     const openSetQ: Node[] = [];
     const closedSet = new Set<Node>();
     startNode.gCost = 0;
     openSetQ.push(startNode);
+    frontierSize = 1;
 
     while (openSetQ.length > 0) {
-        if (speed !== 0) await sleep(speed);
+        if (speed !== 0) {
+            await sleep(speed);
+            onMetrics?.({
+                explored,
+                frontierSize,
+                pathLen: null,
+                elapsedMs: Math.round(performance.now() - t0),
+            });
+        }
 
         const currentNode = openSetQ.shift();
         if (!currentNode) break;
         closedSet.add(currentNode);
+        frontierSize = openSetQ.length;
         updateGrid(currentNode, "closed");
+        explored++;
 
         if (currentNode.x === endNode.x && currentNode.y === endNode.y) {
-            await reconstructPath(endNode);
-            return true;
+            const path = reconstruct(endNode);
+            for (const node of path) {
+                if (speed !== 0) await sleep(50);
+                updateGrid(node, "path");
+            }
+            const elapsedMs = Math.round(performance.now() - t0);
+            onMetrics?.({ explored, frontierSize, pathLen: path.length, elapsedMs });
+            return { found: true, pathLen: path.length };
         }
 
         for (const neighbor of currentNode.neighbors) {
@@ -81,11 +91,24 @@ export default async function dijkstra(
 
                 if (!openSetQ.includes(neighbor)) {
                     openSetQ.push(neighbor);
+                    frontierSize = openSetQ.length;
                     updateGrid(neighbor, "open");
                 }
             }
         }
     }
 
-    return true;
+    const elapsedMs = Math.round(performance.now() - t0);
+    onMetrics?.({ explored, frontierSize: 0, pathLen: null, elapsedMs });
+    return { found: false, pathLen: 0 };
+}
+
+function reconstruct(end: Node): Node[] {
+    const path: Node[] = [];
+    let current: Node | null = end;
+    while (current !== null) {
+        path.unshift(current);
+        current = current.previousNode;
+    }
+    return path;
 }

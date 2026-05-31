@@ -1,9 +1,11 @@
 import type { MutableRefObject } from "react";
 import type { Grid, Node, NodeRefMap } from "@/models/Node";
-import type { AlgorithmName } from "@/atoms/selections";
+import type { AlgorithmName, Metrics } from "@/atoms/selections";
 import aStar from "./astar";
 import dijkstra from "./dijkstra";
 import bidirectional from "./bidirectional";
+
+export type AlgorithmResult = { found: boolean; pathLen: number };
 
 export type AlgorithmFn = (
     startNode: Node,
@@ -11,7 +13,8 @@ export type AlgorithmFn = (
     grid: Grid,
     gridNodeRefs: MutableRefObject<NodeRefMap>,
     speed: number,
-) => Promise<boolean>;
+    onMetrics?: (m: Metrics) => void,
+) => Promise<AlgorithmResult>;
 
 export const algorithms: Record<AlgorithmName, AlgorithmFn> = {
     "A*": aStar,

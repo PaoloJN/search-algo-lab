@@ -4,10 +4,20 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --radius-sm: calc(var(--radius) - 4px);
-    --radius-md: calc(var(--radius) - 2px);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) + 4px);
+    /* type */
+    --font-sans:
+        var(--font-sans), "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono:
+        var(--font-mono), "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+    /* radii */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 12px;
+    --radius-2xl: 16px;
+
+    /* shadcn aliases — driven by the underlying tokens below */
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-card: var(--card);
@@ -21,99 +31,118 @@
     --color-muted: var(--muted);
     --color-muted-foreground: var(--muted-foreground);
     --color-accent: var(--accent);
-    --color-accent-foreground: var(--accent-foreground);
-    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-fg);
+    --color-destructive: var(--danger);
     --color-border: var(--border);
-    --color-input: var(--input);
+    --color-input: var(--border-strong);
     --color-ring: var(--ring);
-    --color-chart-1: var(--chart-1);
-    --color-chart-2: var(--chart-2);
-    --color-chart-3: var(--chart-3);
-    --color-chart-4: var(--chart-4);
-    --color-chart-5: var(--chart-5);
 }
 
-:root {
-    --radius: 0.625rem;
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
-
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
-
-    /* Visualization palette — light mode */
-    --grid-line: oklch(0.92 0 0);
-    --node-empty: oklch(0.99 0 0);
-    --node-wall: oklch(0.18 0 0);
-    --node-open: oklch(0.78 0.13 162);
-    --node-closed: oklch(0.78 0.09 232);
-    --node-path: oklch(0.84 0.16 84);
-    --node-temp: oklch(0.78 0.18 50);
-
-    --legend-open: oklch(0.78 0.13 162);
-    --legend-closed: oklch(0.78 0.09 232);
-    --legend-path: oklch(0.84 0.16 84);
-    --legend-wall: oklch(0.18 0 0);
-}
-
+/* ======== Tokens — dark (default) ======== */
+:root,
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
+    color-scheme: dark;
 
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
+    --bg: oklch(0.145 0.003 250);
+    --bg-elevated: oklch(0.175 0.003 250);
+    --bg-overlay: oklch(0.205 0.004 250);
+    --bg-inset: oklch(0.125 0.003 250);
 
-    /* Visualization palette — dark mode */
-    --grid-line: oklch(0.27 0 0);
-    --node-empty: oklch(0.145 0 0);
-    --node-wall: oklch(0.32 0 0);
-    --node-open: oklch(0.62 0.13 162);
-    --node-closed: oklch(0.55 0.1 232);
-    --node-path: oklch(0.78 0.17 84);
-    --node-temp: oklch(0.7 0.18 50);
+    --fg: oklch(0.985 0.002 250);
+    --fg-muted: oklch(0.68 0.004 250);
+    --fg-subtle: oklch(0.48 0.005 250);
+    --fg-disabled: oklch(0.35 0.005 250);
 
-    --legend-open: oklch(0.62 0.13 162);
-    --legend-closed: oklch(0.55 0.1 232);
-    --legend-path: oklch(0.78 0.17 84);
-    --legend-wall: oklch(0.32 0 0);
+    --border: oklch(0.25 0.004 250);
+    --border-strong: oklch(0.31 0.005 250);
+    --border-subtle: oklch(0.2 0.004 250);
+
+    --ring: oklch(0.72 0.21 25);
+
+    --accent: oklch(0.68 0.22 25);
+    --accent-hover: oklch(0.72 0.22 25);
+    --accent-active: oklch(0.62 0.22 25);
+    --accent-fg: oklch(0.99 0.003 250);
+    --accent-soft: oklch(0.3 0.1 25);
+    --accent-soft-fg: oklch(0.85 0.13 25);
+
+    --success: oklch(0.72 0.15 155);
+    --success-soft: oklch(0.28 0.07 155);
+    --warning: oklch(0.78 0.13 75);
+    --warning-soft: oklch(0.32 0.07 75);
+    --danger: oklch(0.68 0.19 25);
+    --danger-soft: oklch(0.3 0.09 25);
+
+    --radius: 8px;
+
+    /* shadcn aliases */
+    --background: var(--bg);
+    --foreground: var(--fg);
+    --card: var(--bg-elevated);
+    --card-foreground: var(--fg);
+    --popover: var(--bg-overlay);
+    --popover-foreground: var(--fg);
+    --primary: var(--accent);
+    --primary-foreground: var(--accent-fg);
+    --secondary: var(--bg-elevated);
+    --secondary-foreground: var(--fg);
+    --muted: var(--bg-elevated);
+    --muted-foreground: var(--fg-muted);
+
+    /* visualization */
+    --cell-start: oklch(0.68 0.14 155);
+    --cell-end: oklch(0.65 0.18 30);
+    --cell-frontier: oklch(0.62 0.13 162);
+    --cell-visited: oklch(0.55 0.1 232);
+    --cell-path: oklch(0.78 0.17 110);
+    --cell-wall: oklch(0.32 0 0);
+    --cell-temp: oklch(0.7 0.18 50);
+    --grid-line: oklch(1 0 0 / 0.045);
+}
+
+/* ======== Tokens — light ======== */
+.light {
+    color-scheme: light;
+
+    --bg: oklch(1 0 0);
+    --bg-elevated: oklch(0.985 0.002 264);
+    --bg-overlay: oklch(1 0 0);
+    --bg-inset: oklch(0.965 0.003 264);
+
+    --fg: oklch(0.16 0.005 264);
+    --fg-muted: oklch(0.44 0.006 264);
+    --fg-subtle: oklch(0.6 0.005 264);
+    --fg-disabled: oklch(0.75 0.004 264);
+
+    --border: oklch(0.915 0.003 264);
+    --border-strong: oklch(0.86 0.004 264);
+    --border-subtle: oklch(0.945 0.003 264);
+
+    --ring: oklch(0.55 0.18 258);
+
+    --accent: oklch(0.6 0.21 25);
+    --accent-hover: oklch(0.55 0.21 25);
+    --accent-active: oklch(0.5 0.21 25);
+    --accent-fg: oklch(0.99 0.003 250);
+    --accent-soft: oklch(0.96 0.04 25);
+    --accent-soft-fg: oklch(0.45 0.2 25);
+
+    --success: oklch(0.5 0.14 155);
+    --success-soft: oklch(0.94 0.04 155);
+    --warning: oklch(0.62 0.14 75);
+    --warning-soft: oklch(0.96 0.05 75);
+    --danger: oklch(0.55 0.22 25);
+    --danger-soft: oklch(0.95 0.04 25);
+
+    /* visualization */
+    --cell-start: oklch(0.58 0.16 155);
+    --cell-end: oklch(0.6 0.2 30);
+    --cell-frontier: oklch(0.78 0.13 162);
+    --cell-visited: oklch(0.78 0.09 232);
+    --cell-path: oklch(0.82 0.16 110);
+    --cell-wall: oklch(0.22 0 0);
+    --cell-temp: oklch(0.78 0.18 50);
+    --grid-line: oklch(0 0 0 / 0.06);
 }
 
 @layer base {
@@ -121,18 +150,33 @@
         @apply border-border outline-ring/50;
     }
     body {
-        @apply bg-background text-foreground;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: var(--font-sans);
+        font-feature-settings: "ss01", "cv11";
+        -webkit-font-smoothing: antialiased;
         margin: 0;
         overflow: hidden;
     }
 }
 
+/* Stage background — subtle dotted grid + radial top glow */
+.stage {
+    position: fixed;
+    inset: 0;
+    background:
+        linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 30px 30px,
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 / 30px 30px,
+        radial-gradient(120% 90% at 50% 0%, var(--bg-elevated) 0%, var(--bg) 60%);
+}
+
+/* ======== Grid cell visualization ======== */
 @keyframes pop-in {
     0% {
         transform: scale(1);
     }
     50% {
-        transform: scale(1.2);
+        transform: scale(1.15);
     }
     100% {
         transform: scale(1);
@@ -144,31 +188,73 @@
 }
 
 #grid .grid-node {
-    border: 0.9px solid var(--grid-line);
-    background-color: var(--node-empty);
-    cursor: pointer;
+    background-color: transparent;
+    cursor: crosshair;
     transition: background-color 0.15s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 
-#grid .grid-node.path-node {
-    background-color: var(--node-path);
+#grid .grid-node::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: 2px;
+    background-color: transparent;
+    transition: background-color 0.15s ease;
 }
-#grid .grid-node.open-set-node {
-    background-color: var(--node-open);
+
+#grid .grid-node.path-node::after {
+    background-color: var(--cell-path);
 }
-#grid .grid-node.closed-set-node {
-    background-color: var(--node-closed);
+#grid .grid-node.open-set-node::after {
+    background-color: var(--cell-frontier);
 }
-#grid .grid-node.wall-node {
-    background-color: var(--node-wall);
+#grid .grid-node.closed-set-node::after {
+    background-color: var(--cell-visited);
 }
-#grid .grid-node.temp-node {
+#grid .grid-node.wall-node::after {
+    background-color: var(--cell-wall);
+}
+#grid .grid-node.temp-node::after {
+    background-color: var(--cell-temp);
     z-index: 100;
-    background-color: var(--node-temp);
 }
-#grid .grid-node.animated {
-    animation: pop-in 0.2s ease-out;
+#grid .grid-node.animated::after {
+    animation: pop-in 0.22s ease-out;
+}
+
+#grid .grid-node.start-node::after,
+#grid .grid-node.end-node::after {
+    inset: 1px;
+    border-radius: 3px;
+}
+#grid .grid-node.start-node::after {
+    background-color: var(--cell-start);
+}
+#grid .grid-node.end-node::after {
+    background-color: var(--cell-end);
+}
+
+#grid .grid-node svg {
+    position: relative;
+    z-index: 1;
+    color: white;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.45));
+}
+
+/* ======== Status pill pulse ======== */
+@keyframes pulse-dot {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.35;
+    }
+}
+.status-pulse {
+    animation: pulse-dot 1s cubic-bezier(0.2, 0, 0, 1) infinite;
 }

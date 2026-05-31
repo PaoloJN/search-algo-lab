@@ -1,11 +1,13 @@
 import type { MutableRefObject } from "react";
 import type { Grid, Node, NodeRefMap } from "@/models/Node";
+import type { Metrics } from "@/atoms/selections";
 import manhattanDistance from "../manhattanDistance";
 import createPriorityQueue from "../priorityQueue";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 type NodeMark = "open" | "closed" | "path";
+type MetricsReporter = (m: Metrics) => void;
 
 export default async function aStar(
     startNode: Node,
@@ -13,7 +15,8 @@ export default async function aStar(
     grid: Grid,
     gridNodeRefs: MutableRefObject<NodeRefMap>,
     speed: number,
-): Promise<boolean> {
+    onMetrics?: MetricsReporter,
+): Promise<{ found: boolean; pathLen: number }> {
     const updateGrid = (node: Node, type: NodeMark) => {
         if ((node.isStart || node.isEnd) && type !== "path") return;
         const el = gridNodeRefs.current[node.id];
@@ -40,19 +43,9 @@ export default async function aStar(
         }
     };
 
-    async function reconstructPath(end: Node) {
-        const path: Node[] = [];
-        let current: Node | null = end;
-        while (current !== null) {
-            path.unshift(current);
-            current = current.previousNode;
-        }
-
-        for (const node of path) {
-            if (speed !== 0) await sleep(50);
-            updateGrid(node, "path");
-        }
-    }
+    const t0 = performance.now();
+    let explored = 0;
+    let frontierSize = 0;
 
     const openSet = createPriorityQueue<Node>();
     const inOpenSet = new Set<number>();
@@ -61,20 +54,37 @@ export default async function aStar(
     startNode.fCost = startNode.gCost + startNode.hCost;
     openSet.enqueue(startNode, startNode.fCost);
     inOpenSet.add(startNode.id);
+    frontierSize = 1;
 
     while (!openSet.isEmpty()) {
-        if (speed !== 0) await sleep(speed);
+        if (speed !== 0) {
+            await sleep(speed);
+            onMetrics?.({
+                explored,
+                frontierSize,
+                pathLen: null,
+                elapsedMs: Math.round(performance.now() - t0),
+            });
+        }
 
         const currentNode = openSet.dequeue();
         if (!currentNode) break;
         inOpenSet.delete(currentNode.id);
+        frontierSize = Math.max(0, frontierSize - 1);
 
         if (currentNode.x === endNode.x && currentNode.y === endNode.y) {
-            await reconstructPath(endNode);
-            return true;
+            const path = reconstruct(endNode);
+            for (const node of path) {
+                if (speed !== 0) await sleep(50);
+                updateGrid(node, "path");
+            }
+            const elapsedMs = Math.round(performance.now() - t0);
+            onMetrics?.({ explored, frontierSize, pathLen: path.length, elapsedMs });
+            return { found: true, pathLen: path.length };
         }
 
         updateGrid(currentNode, "closed");
+        explored++;
 
         for (const neighbor of currentNode.neighbors) {
             if (neighbor.isWall) continue;
@@ -89,11 +99,24 @@ export default async function aStar(
                 if (!inOpenSet.has(neighbor.id)) {
                     openSet.enqueue(neighbor, neighbor.fCost);
                     inOpenSet.add(neighbor.id);
+                    frontierSize++;
                     updateGrid(neighbor, "open");
                 }
             }
         }
     }
 
-    return true;
+    const elapsedMs = Math.round(performance.now() - t0);
+    onMetrics?.({ explored, frontierSize: 0, pathLen: null, elapsedMs });
+    return { found: false, pathLen: 0 };
+}
+
+function reconstruct(end: Node): Node[] {
+    const path: Node[] = [];
+    let current: Node | null = end;
+    while (current !== null) {
+        path.unshift(current);
+        current = current.previousNode;
+    }
+    return path;
 }

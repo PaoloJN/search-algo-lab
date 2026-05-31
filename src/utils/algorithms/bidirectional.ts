@@ -1,9 +1,11 @@
 import type { MutableRefObject } from "react";
 import type { Grid, Node, NodeRefMap } from "@/models/Node";
+import type { Metrics } from "@/atoms/selections";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 type NodeMark = "open" | "closed" | "path";
+type MetricsReporter = (m: Metrics) => void;
 
 export default async function bidirectional(
     startNode: Node,
@@ -11,7 +13,8 @@ export default async function bidirectional(
     grid: Grid,
     gridNodeRefs: MutableRefObject<NodeRefMap>,
     speed: number,
-): Promise<boolean> {
+    onMetrics?: MetricsReporter,
+): Promise<{ found: boolean; pathLen: number }> {
     const updateGrid = (node: Node, type: NodeMark) => {
         if ((node.isStart || node.isEnd) && type !== "path") return;
         const el = gridNodeRefs.current[node.id];
@@ -38,6 +41,10 @@ export default async function bidirectional(
         }
     };
 
+    const t0 = performance.now();
+    let explored = 0;
+    let frontierSize = 0;
+
     async function reconstructPath(meetForward: Node, meetBackward: Node) {
         const pathForward: Node[] = [];
         let current: Node | null = meetForward;
@@ -59,6 +66,7 @@ export default async function bidirectional(
             if (speed !== 0) await sleep(50);
             updateGrid(node, "path");
         }
+        return fullPath.length;
     }
 
     const visitedForwards = new Set<Node>();
@@ -70,22 +78,34 @@ export default async function bidirectional(
     endNode.gCost = 0;
     forwardsQ.push(startNode);
     backwardsQ.push(endNode);
+    frontierSize = 2;
 
     while (forwardsQ.length > 0 && backwardsQ.length > 0) {
-        if (speed !== 0) await sleep(speed);
+        if (speed !== 0) {
+            await sleep(speed);
+            onMetrics?.({
+                explored,
+                frontierSize,
+                pathLen: null,
+                elapsedMs: Math.round(performance.now() - t0),
+            });
+        }
 
         let currentNode = forwardsQ.shift();
         if (!currentNode) break;
         visitedForwards.add(currentNode);
         updateGrid(currentNode, "closed");
+        explored++;
 
         for (const neighbor of currentNode.neighbors) {
             if (neighbor.isWall) continue;
             if (visitedForwards.has(neighbor)) continue;
 
             if (visitedBackwards.has(neighbor) || backwardsQ.includes(neighbor)) {
-                await reconstructPath(currentNode, neighbor);
-                return true;
+                const pathLen = await reconstructPath(currentNode, neighbor);
+                const elapsedMs = Math.round(performance.now() - t0);
+                onMetrics?.({ explored, frontierSize, pathLen, elapsedMs });
+                return { found: true, pathLen };
             }
 
             const tentativeGCost = currentNode.gCost + 1;
@@ -104,14 +124,17 @@ export default async function bidirectional(
         if (!currentNode) break;
         visitedBackwards.add(currentNode);
         updateGrid(currentNode, "closed");
+        explored++;
 
         for (const neighbor of currentNode.neighbors) {
             if (neighbor.isWall) continue;
             if (visitedBackwards.has(neighbor)) continue;
 
             if (visitedForwards.has(neighbor) || forwardsQ.includes(neighbor)) {
-                await reconstructPath(neighbor, currentNode);
-                return true;
+                const pathLen = await reconstructPath(neighbor, currentNode);
+                const elapsedMs = Math.round(performance.now() - t0);
+                onMetrics?.({ explored, frontierSize, pathLen, elapsedMs });
+                return { found: true, pathLen };
             }
 
             const tentativeGCost = currentNode.gCost + 1;
@@ -125,7 +148,11 @@ export default async function bidirectional(
                 }
             }
         }
+
+        frontierSize = forwardsQ.length + backwardsQ.length;
     }
 
-    return true;
+    const elapsedMs = Math.round(performance.now() - t0);
+    onMetrics?.({ explored, frontierSize: 0, pathLen: null, elapsedMs });
+    return { found: false, pathLen: 0 };
 }
