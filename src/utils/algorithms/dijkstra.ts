@@ -71,6 +71,7 @@ export default async function dijkstra(
         }
 
         for (const neighbor of currentNode.neighbors) {
+            if (neighbor.isWall) continue;
             if (closedSet.has(neighbor)) continue;
 
             const tentativeGCost = currentNode.gCost + 1;
@@ -78,7 +79,7 @@ export default async function dijkstra(
                 neighbor.previousNode = currentNode;
                 neighbor.gCost = tentativeGCost;
 
-                if (!openSetQ.includes(neighbor) && !neighbor.isWall) {
+                if (!openSetQ.includes(neighbor)) {
                     openSetQ.push(neighbor);
                     updateGrid(neighbor, "open");
                 }

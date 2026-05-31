@@ -80,6 +80,7 @@ export default async function bidirectional(
         updateGrid(currentNode, "closed");
 
         for (const neighbor of currentNode.neighbors) {
+            if (neighbor.isWall) continue;
             if (visitedForwards.has(neighbor)) continue;
 
             if (visitedBackwards.has(neighbor) || backwardsQ.includes(neighbor)) {
@@ -92,7 +93,7 @@ export default async function bidirectional(
                 neighbor.previousNode = currentNode;
                 neighbor.gCost = tentativeGCost;
 
-                if (!forwardsQ.includes(neighbor) && !neighbor.isWall) {
+                if (!forwardsQ.includes(neighbor)) {
                     forwardsQ.push(neighbor);
                     updateGrid(neighbor, "open");
                 }
@@ -105,14 +106,20 @@ export default async function bidirectional(
         updateGrid(currentNode, "closed");
 
         for (const neighbor of currentNode.neighbors) {
+            if (neighbor.isWall) continue;
             if (visitedBackwards.has(neighbor)) continue;
+
+            if (visitedForwards.has(neighbor) || forwardsQ.includes(neighbor)) {
+                await reconstructPath(neighbor, currentNode);
+                return true;
+            }
 
             const tentativeGCost = currentNode.gCost + 1;
             if (tentativeGCost < neighbor.gCost) {
                 neighbor.previousNode = currentNode;
                 neighbor.gCost = tentativeGCost;
 
-                if (!backwardsQ.includes(neighbor) && !neighbor.isWall) {
+                if (!backwardsQ.includes(neighbor)) {
                     backwardsQ.push(neighbor);
                     updateGrid(neighbor, "open");
                 }

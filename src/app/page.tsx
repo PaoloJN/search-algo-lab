@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useSetAtom, useAtom, useAtomValue } from "jotai";
 import {
     EraserIcon,
@@ -10,7 +11,7 @@ import {
     RotateCcwIcon,
 } from "lucide-react";
 
-import GridView from "@/components/grid/Grid";
+const GridView = dynamic(() => import("@/components/grid/Grid"), { ssr: false });
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {

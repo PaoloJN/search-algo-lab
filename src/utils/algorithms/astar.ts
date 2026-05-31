@@ -77,6 +77,8 @@ export default async function aStar(
         updateGrid(currentNode, "closed");
 
         for (const neighbor of currentNode.neighbors) {
+            if (neighbor.isWall) continue;
+
             const tentativeGCost = currentNode.gCost + 1;
             if (tentativeGCost < neighbor.gCost) {
                 neighbor.previousNode = currentNode;
@@ -84,7 +86,7 @@ export default async function aStar(
                 neighbor.hCost = manhattanDistance(neighbor, endNode);
                 neighbor.fCost = neighbor.gCost + neighbor.hCost;
 
-                if (!inOpenSet.has(neighbor.id) && !neighbor.isWall) {
+                if (!inOpenSet.has(neighbor.id)) {
                     openSet.enqueue(neighbor, neighbor.fCost);
                     inOpenSet.add(neighbor.id);
                     updateGrid(neighbor, "open");
