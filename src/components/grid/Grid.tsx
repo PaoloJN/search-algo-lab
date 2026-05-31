@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { FlagIcon, GoalIcon } from "lucide-react";
 
@@ -18,16 +18,18 @@ import {
     isMazeRunningAtom,
     isBusyAtom,
     SPEED_MS,
+    type GridSize,
 } from "@/atoms/selections";
 import { algorithms } from "@/utils/algorithms";
 import { mazes } from "@/utils/mazes";
 import { createNode, type Grid, type Node, type NodeRefMap } from "@/models/Node";
 
-type Dims = { width: number; height: number; nodeSize: string };
+type Dims = { width: number; height: number };
 
-const GRID_DIMS: Record<"Small" | "Large", Dims> = {
-    Small: { width: 49, height: 19, nodeSize: "1.9vw" },
-    Large: { width: 85, height: 35, nodeSize: "1.1vw" },
+// "Small" grid = small cells, denser. "Large" grid = larger cells, sparser.
+const GRID_DIMS: Record<GridSize, Dims> = {
+    Small: { width: 85, height: 35 },
+    Large: { width: 49, height: 19 },
 };
 
 function buildGrid(width: number, height: number) {
@@ -54,6 +56,13 @@ function buildGrid(width: number, height: number) {
     return { grid, start, end };
 }
 
+function computeCellSize(width: number, height: number) {
+    if (typeof window === "undefined") return 16;
+    const w = window.innerWidth / width;
+    const h = window.innerHeight / height;
+    return Math.max(8, Math.floor(Math.min(w, h)));
+}
+
 export default function GridView() {
     const algorithm = useAtomValue(algorithmAtom);
     const maze = useAtomValue(mazeAtom);
@@ -78,7 +87,6 @@ export default function GridView() {
             grid: built.grid,
             width: dims.width,
             height: dims.height,
-            nodeSize: dims.nodeSize,
         };
     });
     const [startPos, setStartPos] = useState(() => ({
@@ -90,6 +98,8 @@ export default function GridView() {
         y: Math.floor(GRID_DIMS.Large.height / 2),
     }));
 
+    const [cellSize, setCellSize] = useState(24);
+
     const gridNodeRefs = useRef<NodeRefMap>({});
 
     const [isMouseDown, setIsMouseDown] = useState(false);
@@ -97,7 +107,6 @@ export default function GridView() {
     const [draggingNode, setDraggingNode] = useState<"start" | "end" | null>(null);
     const [tempNode, setTempNode] = useState<{ x: number; y: number } | null>(null);
 
-    // Always-fresh refs so effects/handlers can read latest state without retriggering.
     const latest = useRef({
         gridState,
         startPos,
@@ -120,6 +129,14 @@ export default function GridView() {
         draggingNode,
         isBusy,
     };
+
+    // Recompute pixel cell size from viewport whenever grid dims or viewport change.
+    useLayoutEffect(() => {
+        const update = () => setCellSize(computeCellSize(gridState.width, gridState.height));
+        update();
+        window.addEventListener("resize", update);
+        return () => window.removeEventListener("resize", update);
+    }, [gridState.width, gridState.height]);
 
     const resetGrid = useCallback(
         (full: boolean) => {
@@ -150,7 +167,6 @@ export default function GridView() {
         [setIsAlgorithmDone],
     );
 
-    // Run algorithm when start signal bumps.
     useEffect(() => {
         if (startSignal === 0) return;
         let cancelled = false;
@@ -183,19 +199,16 @@ export default function GridView() {
         };
     }, [startSignal, resetGrid, setIsAlgorithmRunning, setIsAlgorithmDone]);
 
-    // Reset (full) signal.
     useEffect(() => {
         if (resetSignal === 0) return;
         resetGrid(true);
     }, [resetSignal, resetGrid]);
 
-    // Clear paths signal.
     useEffect(() => {
         if (clearPathsSignal === 0) return;
         resetGrid(false);
     }, [clearPathsSignal, resetGrid]);
 
-    // Maze selection change.
     useEffect(() => {
         if (maze === null) return;
         let cancelled = false;
@@ -224,7 +237,6 @@ export default function GridView() {
         };
     }, [maze, resetGrid, setIsMazeRunning]);
 
-    // Grid size change — rebuild on transitions only, not on mount.
     const didMountRef = useRef(false);
     useEffect(() => {
         if (!didMountRef.current) {
@@ -238,14 +250,12 @@ export default function GridView() {
             grid: built.grid,
             width: dims.width,
             height: dims.height,
-            nodeSize: dims.nodeSize,
         });
         setStartPos(built.start);
         setEndPos(built.end);
         setIsAlgorithmDone(false);
     }, [gridSize, setIsAlgorithmDone]);
 
-    // Suppress unused-warning for atoms we read indirectly via latest.
     void pathSpeed;
     void mazeSpeed;
 
@@ -315,7 +325,10 @@ export default function GridView() {
         }
         const { gridState, startPos, endPos, isAlgorithmDone } = latest.current;
         const node = gridState.grid[row][col];
-        if ((node.isStart && draggingNode === "end") || (node.isEnd && draggingNode === "start")) {
+        if (
+            (node.isStart && draggingNode === "end") ||
+            (node.isEnd && draggingNode === "start")
+        ) {
             return;
         }
 
@@ -368,46 +381,51 @@ export default function GridView() {
     };
 
     return (
-        <div
-            id="grid"
-            onMouseLeave={handleMouseUp}
-            onMouseUp={handleMouseUp}
-            onContextMenu={(e) => e.preventDefault()}
-            style={{ gridTemplateColumns: `repeat(${gridState.width}, 1fr)` }}
-        >
-            {gridState.grid.map((row, y) =>
-                row.map((node, x) => {
-                    const showStart =
-                        (node.isStart && draggingNode !== "start") ||
-                        (tempNode?.x === node.x &&
-                            tempNode?.y === node.y &&
-                            draggingNode === "start");
-                    const showEnd =
-                        (node.isEnd && draggingNode !== "end") ||
-                        (tempNode?.x === node.x &&
-                            tempNode?.y === node.y &&
-                            draggingNode === "end");
-                    return (
-                        <div
-                            key={node.id}
-                            ref={(el) => {
-                                gridNodeRefs.current[node.id] = el;
-                            }}
-                            className="grid-node"
-                            onMouseDown={(e) => handleMouseDown(y, x, e)}
-                            onMouseEnter={() => handleMouseEnter(y, x)}
-                            onMouseLeave={() => handleMouseLeave(y, x)}
-                            style={{
-                                width: gridState.nodeSize,
-                                height: gridState.nodeSize,
-                            }}
-                        >
-                            {showStart && <FlagIcon className="text-foreground p-[15%]" />}
-                            {showEnd && <GoalIcon className="text-foreground p-[15%]" />}
-                        </div>
-                    );
-                }),
-            )}
+        <div className="absolute inset-0 flex items-center justify-center">
+            <div
+                id="grid"
+                onMouseLeave={handleMouseUp}
+                onMouseUp={handleMouseUp}
+                onContextMenu={(e) => e.preventDefault()}
+                style={{
+                    gridTemplateColumns: `repeat(${gridState.width}, ${cellSize}px)`,
+                    gridTemplateRows: `repeat(${gridState.height}, ${cellSize}px)`,
+                }}
+            >
+                {gridState.grid.map((row, y) =>
+                    row.map((node, x) => {
+                        const showStart =
+                            (node.isStart && draggingNode !== "start") ||
+                            (tempNode?.x === node.x &&
+                                tempNode?.y === node.y &&
+                                draggingNode === "start");
+                        const showEnd =
+                            (node.isEnd && draggingNode !== "end") ||
+                            (tempNode?.x === node.x &&
+                                tempNode?.y === node.y &&
+                                draggingNode === "end");
+                        return (
+                            <div
+                                key={node.id}
+                                ref={(el) => {
+                                    gridNodeRefs.current[node.id] = el;
+                                }}
+                                className="grid-node"
+                                onMouseDown={(e) => handleMouseDown(y, x, e)}
+                                onMouseEnter={() => handleMouseEnter(y, x)}
+                                onMouseLeave={() => handleMouseLeave(y, x)}
+                                style={{
+                                    width: cellSize,
+                                    height: cellSize,
+                                }}
+                            >
+                                {showStart && <FlagIcon className="text-foreground p-[15%]" />}
+                                {showEnd && <GoalIcon className="text-foreground p-[15%]" />}
+                            </div>
+                        );
+                    }),
+                )}
+            </div>
         </div>
     );
 }

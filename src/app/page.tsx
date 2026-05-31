@@ -1,9 +1,17 @@
 "use client";
 
 import { useSetAtom, useAtom, useAtomValue } from "jotai";
-import { InfoIcon } from "lucide-react";
+import {
+    EraserIcon,
+    GithubIcon,
+    InfoIcon,
+    Loader2Icon,
+    PlayIcon,
+    RotateCcwIcon,
+} from "lucide-react";
 
 import GridView from "@/components/grid/Grid";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -47,48 +55,11 @@ export default function Page() {
     return (
         <main className="relative h-screen w-screen overflow-hidden">
             <GridView />
-            <Controls />
             <SelectionPanel />
             <Legend />
-            <HelpButton />
+            <ActionBar />
+            <CornerLinks />
         </main>
-    );
-}
-
-function Controls() {
-    const setStartSignal = useSetAtom(startSignalAtom);
-    const setResetSignal = useSetAtom(resetSignalAtom);
-    const setClearPathsSignal = useSetAtom(clearPathsSignalAtom);
-    const isAlgorithmRunning = useAtomValue(isAlgorithmRunningAtom);
-    const isMazeRunning = useAtomValue(isMazeRunningAtom);
-    const isBusy = useAtomValue(isBusyAtom);
-
-    const label = isAlgorithmRunning ? "Running…" : isMazeRunning ? "Generating…" : "Start";
-
-    return (
-        <div className="bg-background/80 absolute top-6 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-md border p-2 shadow-lg backdrop-blur">
-            <h1 className="px-2 text-sm font-semibold select-none">search-algo-lab</h1>
-            <div className="bg-border h-5 w-px" />
-            <Button size="sm" disabled={isBusy} onClick={() => setStartSignal((s) => s + 1)}>
-                {label}
-            </Button>
-            <Button
-                size="sm"
-                variant="outline"
-                disabled={isBusy}
-                onClick={() => setClearPathsSignal((s) => s + 1)}
-            >
-                Clear paths
-            </Button>
-            <Button
-                size="sm"
-                variant="outline"
-                disabled={isBusy}
-                onClick={() => setResetSignal((s) => s + 1)}
-            >
-                Reset
-            </Button>
-        </div>
     );
 }
 
@@ -99,145 +70,232 @@ function SelectionPanel() {
     const [pathSpeed, setPathSpeed] = useAtom(pathSpeedAtom);
     const [mazeSpeed, setMazeSpeed] = useAtom(mazeSpeedAtom);
     const isBusy = useAtomValue(isBusyAtom);
+    const isAlgorithmRunning = useAtomValue(isAlgorithmRunningAtom);
+    const isMazeRunning = useAtomValue(isMazeRunningAtom);
+
+    const statusLabel = isAlgorithmRunning
+        ? "Searching"
+        : isMazeRunning
+          ? "Generating"
+          : "Idle";
 
     return (
-        <div className="bg-background/80 absolute top-6 left-6 flex w-56 flex-col gap-2 rounded-md border p-3 shadow-lg backdrop-blur">
-            <Field label="Algorithm">
-                <Select
-                    value={algorithm}
-                    onValueChange={(v) => setAlgorithm(v as AlgorithmName)}
-                    disabled={isBusy}
-                >
-                    <SelectTrigger className="w-full">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {algorithmNames.map((name) => (
-                            <SelectItem key={name} value={name}>
-                                {name}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </Field>
+        <Panel className="top-6 left-6 w-64">
+            <header className="flex items-center justify-between pb-3 border-b border-border/60">
+                <div>
+                    <h1 className="text-sm font-semibold tracking-tight">search-algo-lab</h1>
+                    <p className="text-[11px] text-muted-foreground">Pathfinding visualizer</p>
+                </div>
+                <StatusDot active={isBusy} label={statusLabel} />
+            </header>
 
-            <Field label="Maze">
-                <Select
-                    value={maze ?? ""}
-                    onValueChange={(v) => setMaze(v as MazeName)}
-                    disabled={isBusy}
-                >
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="None" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {mazeNames.map((name) => (
-                            <SelectItem key={name} value={name}>
-                                {name}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </Field>
+            <Section title="Search">
+                <Field label="Algorithm">
+                    <Select
+                        value={algorithm}
+                        onValueChange={(v) => setAlgorithm(v as AlgorithmName)}
+                        disabled={isBusy}
+                    >
+                        <SelectTrigger className="w-full">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {algorithmNames.map((name) => (
+                                <SelectItem key={name} value={name}>
+                                    {name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </Field>
 
-            <Field label="Grid size">
-                <Select
-                    value={gridSize}
-                    onValueChange={(v) => setGridSize(v as GridSize)}
-                    disabled={isBusy}
-                >
-                    <SelectTrigger className="w-full">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {GRID_SIZES.map((s) => (
-                            <SelectItem key={s} value={s}>
-                                {s}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </Field>
+                <Field label="Maze">
+                    <Select
+                        value={maze ?? ""}
+                        onValueChange={(v) => setMaze(v as MazeName)}
+                        disabled={isBusy}
+                    >
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="None" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {mazeNames.map((name) => (
+                                <SelectItem key={name} value={name}>
+                                    {name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </Field>
+            </Section>
 
-            <Field label="Path speed">
-                <Select
-                    value={pathSpeed}
-                    onValueChange={(v) => setPathSpeed(v as SpeedSetting)}
-                    disabled={isBusy}
-                >
-                    <SelectTrigger className="w-full">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {SPEEDS.map((s) => (
-                            <SelectItem key={s} value={s}>
-                                {s}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </Field>
+            <Section title="Display">
+                <Field label="Grid size">
+                    <Select
+                        value={gridSize}
+                        onValueChange={(v) => setGridSize(v as GridSize)}
+                        disabled={isBusy}
+                    >
+                        <SelectTrigger className="w-full">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {GRID_SIZES.map((s) => (
+                                <SelectItem key={s} value={s}>
+                                    {s}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </Field>
 
-            <Field label="Maze speed">
-                <Select
-                    value={mazeSpeed}
-                    onValueChange={(v) => setMazeSpeed(v as SpeedSetting)}
-                    disabled={isBusy}
-                >
-                    <SelectTrigger className="w-full">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {SPEEDS.map((s) => (
-                            <SelectItem key={s} value={s}>
-                                {s}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </Field>
-        </div>
-    );
-}
+                <Field label="Path speed">
+                    <Select
+                        value={pathSpeed}
+                        onValueChange={(v) => setPathSpeed(v as SpeedSetting)}
+                        disabled={isBusy}
+                    >
+                        <SelectTrigger className="w-full">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {SPEEDS.map((s) => (
+                                <SelectItem key={s} value={s}>
+                                    {s}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </Field>
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-    return (
-        <label className="flex flex-col gap-1">
-            <span className="text-muted-foreground text-xs">{label}</span>
-            {children}
-        </label>
+                <Field label="Maze speed">
+                    <Select
+                        value={mazeSpeed}
+                        onValueChange={(v) => setMazeSpeed(v as SpeedSetting)}
+                        disabled={isBusy}
+                    >
+                        <SelectTrigger className="w-full">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {SPEEDS.map((s) => (
+                                <SelectItem key={s} value={s}>
+                                    {s}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </Field>
+            </Section>
+        </Panel>
     );
 }
 
 function Legend() {
     return (
-        <div className="bg-background/80 absolute top-6 right-6 flex flex-col gap-1.5 rounded-md border p-3 text-xs shadow-lg backdrop-blur">
-            <LegendRow swatchClass="bg-[var(--legend-open)]" label="Open set" />
-            <LegendRow swatchClass="bg-[var(--legend-closed)]" label="Closed set" />
-            <LegendRow swatchClass="bg-[var(--legend-path)]" label="Path" />
-            <LegendRow swatchClass="bg-[var(--legend-wall)] border border-border" label="Wall" />
-        </div>
+        <Panel className="top-6 right-6">
+            <div className="flex flex-col gap-2">
+                <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    Legend
+                </span>
+                <LegendRow color="var(--legend-open)" label="Frontier" />
+                <LegendRow color="var(--legend-closed)" label="Visited" />
+                <LegendRow color="var(--legend-path)" label="Path" />
+                <LegendRow color="var(--legend-wall)" label="Wall" />
+            </div>
+        </Panel>
     );
 }
 
-function LegendRow({ swatchClass, label }: { swatchClass: string; label: string }) {
+function LegendRow({ color, label }: { color: string; label: string }) {
     return (
-        <div className="flex items-center gap-2">
-            <span className={`inline-block h-3 w-3 rounded-sm ${swatchClass}`} />
-            <span>{label}</span>
+        <div className="flex items-center gap-2.5">
+            <span
+                className="inline-block w-3 h-3 rounded-[3px] ring-1 ring-inset ring-white/10"
+                style={{ backgroundColor: color }}
+            />
+            <span className="text-xs text-foreground/90">{label}</span>
         </div>
     );
 }
 
-function HelpButton() {
+function ActionBar() {
+    const setStartSignal = useSetAtom(startSignalAtom);
+    const setResetSignal = useSetAtom(resetSignalAtom);
+    const setClearPathsSignal = useSetAtom(clearPathsSignalAtom);
+    const isAlgorithmRunning = useAtomValue(isAlgorithmRunningAtom);
+    const isMazeRunning = useAtomValue(isMazeRunningAtom);
+    const isBusy = useAtomValue(isBusyAtom);
+
+    const startLabel = isAlgorithmRunning
+        ? "Searching…"
+        : isMazeRunning
+          ? "Generating…"
+          : "Start";
+
+    return (
+        <Panel
+            row
+            className="bottom-6 left-1/2 -translate-x-1/2 items-center gap-1.5 p-1.5"
+        >
+            <Button
+                size="default"
+                disabled={isBusy}
+                onClick={() => setStartSignal((s) => s + 1)}
+                className="min-w-[140px]"
+            >
+                {isBusy ? (
+                    <Loader2Icon className="h-4 w-4 animate-spin" />
+                ) : (
+                    <PlayIcon className="h-4 w-4" />
+                )}
+                {startLabel}
+            </Button>
+            <Button
+                size="default"
+                variant="ghost"
+                disabled={isBusy}
+                onClick={() => setClearPathsSignal((s) => s + 1)}
+            >
+                <EraserIcon className="h-4 w-4" />
+                Clear paths
+            </Button>
+            <Button
+                size="default"
+                variant="ghost"
+                disabled={isBusy}
+                onClick={() => setResetSignal((s) => s + 1)}
+            >
+                <RotateCcwIcon className="h-4 w-4" />
+                Reset
+            </Button>
+        </Panel>
+    );
+}
+
+function CornerLinks() {
+    return (
+        <div className="absolute bottom-6 right-6 flex items-center gap-2">
+            <a
+                href="https://github.com/PaoloJN/search-algo-lab"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="View source on GitHub"
+            >
+                <Button size="icon" variant="outline" className="shadow-lg">
+                    <GithubIcon className="h-4 w-4" />
+                </Button>
+            </a>
+            <HelpDialog />
+        </div>
+    );
+}
+
+function HelpDialog() {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button
-                    size="icon"
-                    variant="outline"
-                    className="absolute right-6 bottom-6 shadow-lg"
-                >
+                <Button size="icon" variant="outline" className="shadow-lg">
                     <InfoIcon className="h-4 w-4" />
                 </Button>
             </DialogTrigger>
@@ -245,30 +303,91 @@ function HelpButton() {
                 <DialogHeader>
                     <DialogTitle>How to use</DialogTitle>
                     <DialogDescription>
-                        Visualize pathfinding and maze generation algorithms.
+                        A few interactions to know about.
                     </DialogDescription>
                 </DialogHeader>
-                <ul className="text-muted-foreground space-y-2 text-sm">
+                <ul className="text-sm space-y-3 text-muted-foreground">
                     <li>
-                        <span className="text-foreground font-medium">Left-click + drag</span> to
-                        draw walls. <span className="text-foreground font-medium">Right-click</span>{" "}
-                        to erase them.
+                        <kbd className="text-foreground font-medium">Left-click + drag</kbd> to
+                        draw walls.{" "}
+                        <kbd className="text-foreground font-medium">Right-click</kbd> to erase.
                     </li>
                     <li>
-                        <span className="text-foreground font-medium">Drag the flag or goal</span>{" "}
-                        icons to move the start and end points.
+                        <kbd className="text-foreground font-medium">Drag the flag or goal</kbd>{" "}
+                        icon to move the start and end points.
                     </li>
                     <li>
                         Pick an algorithm and press{" "}
-                        <span className="text-foreground font-medium">Start</span>. Optionally
-                        select a maze to generate walls before searching.
+                        <kbd className="text-foreground font-medium">Start</kbd>. Optionally
+                        select a maze to generate walls first.
                     </li>
                     <li>
-                        Once a path has been drawn, dragging start/end re-runs the algorithm
-                        instantly.
+                        After a run, dragging start/end re-runs the algorithm instantly.
                     </li>
                 </ul>
             </DialogContent>
         </Dialog>
+    );
+}
+
+function Panel({
+    className,
+    row,
+    children,
+}: {
+    className?: string;
+    row?: boolean;
+    children: React.ReactNode;
+}) {
+    return (
+        <div
+            className={cn(
+                "absolute flex gap-3 rounded-xl border border-border/60 bg-background/70 p-3.5 shadow-2xl shadow-black/40 backdrop-blur-md",
+                row ? "flex-row" : "flex-col",
+                className,
+            )}
+        >
+            {children}
+        </div>
+    );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+    return (
+        <section className="flex flex-col gap-2">
+            <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                {title}
+            </span>
+            {children}
+        </section>
+    );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+    return (
+        <label className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">{label}</span>
+            {children}
+        </label>
+    );
+}
+
+function StatusDot({ active, label }: { active: boolean; label: string }) {
+    return (
+        <div className="flex items-center gap-1.5">
+            <span className="relative inline-flex h-2 w-2">
+                {active && (
+                    <span className="absolute inset-0 inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/60" />
+                )}
+                <span
+                    className={`relative inline-flex h-2 w-2 rounded-full ${
+                        active ? "bg-emerald-400" : "bg-muted-foreground/40"
+                    }`}
+                />
+            </span>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                {label}
+            </span>
+        </div>
     );
 }
