@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 
 const GridView = dynamic(() => import("@/components/grid/Grid"), { ssr: false });
+
+import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -277,6 +279,7 @@ function ActionBar() {
 function CornerLinks() {
     return (
         <div className="absolute bottom-6 right-6 flex items-center gap-2">
+            <ThemeToggle />
             <a
                 href="https://github.com/PaoloJN/search-algo-lab"
                 target="_blank"

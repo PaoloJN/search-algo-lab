@@ -26,6 +26,11 @@
     --color-border: var(--border);
     --color-input: var(--input);
     --color-ring: var(--ring);
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
 }
 
 :root {
@@ -49,23 +54,29 @@
     --input: oklch(0.922 0 0);
     --ring: oklch(0.708 0 0);
 
-    /* visualization palette */
-    --grid-line: oklch(0.205 0 0);
-    --node-empty: #101010;
-    --node-wall: #1a1a1a;
-    --node-open: rgba(76, 163, 138, 0.6);
-    --node-closed: rgba(61, 88, 117, 0.6);
-    --node-path: rgba(153, 161, 76, 0.6);
-    --node-temp: orange;
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
 
-    --legend-open: rgba(76, 163, 138, 0.85);
-    --legend-closed: rgba(61, 88, 117, 0.85);
-    --legend-path: rgba(153, 161, 76, 0.85);
-    --legend-wall: #1a1a1a;
+    /* Visualization palette — light mode */
+    --grid-line: oklch(0.92 0 0);
+    --node-empty: oklch(0.99 0 0);
+    --node-wall: oklch(0.18 0 0);
+    --node-open: oklch(0.78 0.13 162);
+    --node-closed: oklch(0.78 0.09 232);
+    --node-path: oklch(0.84 0.16 84);
+    --node-temp: oklch(0.78 0.18 50);
+
+    --legend-open: oklch(0.78 0.13 162);
+    --legend-closed: oklch(0.78 0.09 232);
+    --legend-path: oklch(0.84 0.16 84);
+    --legend-wall: oklch(0.18 0 0);
 }
 
 .dark {
-    --background: oklch(0.205 0 0);
+    --background: oklch(0.145 0 0);
     --foreground: oklch(0.985 0 0);
     --card: oklch(0.205 0 0);
     --card-foreground: oklch(0.985 0 0);
@@ -83,6 +94,26 @@
     --border: oklch(1 0 0 / 10%);
     --input: oklch(1 0 0 / 15%);
     --ring: oklch(0.556 0 0);
+
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
+
+    /* Visualization palette — dark mode */
+    --grid-line: oklch(0.27 0 0);
+    --node-empty: oklch(0.145 0 0);
+    --node-wall: oklch(0.32 0 0);
+    --node-open: oklch(0.62 0.13 162);
+    --node-closed: oklch(0.55 0.1 232);
+    --node-path: oklch(0.78 0.17 84);
+    --node-temp: oklch(0.7 0.18 50);
+
+    --legend-open: oklch(0.62 0.13 162);
+    --legend-closed: oklch(0.55 0.1 232);
+    --legend-path: oklch(0.78 0.17 84);
+    --legend-wall: oklch(0.32 0 0);
 }
 
 @layer base {
@@ -90,7 +121,7 @@
         @apply border-border outline-ring/50;
     }
     body {
-        @apply text-foreground bg-[#101010];
+        @apply bg-background text-foreground;
         margin: 0;
         overflow: hidden;
     }
