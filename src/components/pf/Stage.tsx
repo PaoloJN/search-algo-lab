@@ -30,7 +30,7 @@ import {
     type Speed,
 } from "@/atoms/pf";
 
-const CELL_PX: Record<GridSize, number> = { small: 30, medium: 21, large: 14 };
+const CELL_PX: Record<GridSize, number> = { small: 14, medium: 22, large: 32 };
 const EXPLORE_SPEED: Record<Speed, number> = { slow: 1, normal: 3, fast: 9, instant: 1e9 };
 const MAZE_SPEED: Record<MazeSpeed, number> = { slow: 2, normal: 6, fast: 24 };
 
