@@ -41,7 +41,7 @@ const COLORS = {
     frontier: "#3e9b7e",
     visited: "#38597a",
     path: "#aeb84e",
-    wall: "#22252b",
+    wall: "#1f2023",
     start: "#34a373",
     end: "#d9694f",
     current: "#5cc0a0",
@@ -377,10 +377,7 @@ export function Stage() {
         while (walls.has(PF.K(s[0], s[1])) && tries++ < 100) s = pickRandom();
         let e: [number, number] = pickRandom();
         tries = 0;
-        while (
-            (walls.has(PF.K(e[0], e[1])) || (e[0] === s[0] && e[1] === s[1])) &&
-            tries++ < 100
-        )
+        while ((walls.has(PF.K(e[0], e[1])) || (e[0] === s[0] && e[1] === s[1])) && tries++ < 100)
             e = pickRandom();
         startRef.current = s;
         endRef.current = e;
@@ -720,10 +717,7 @@ export function Stage() {
                 </>
             )}
 
-            <OverlayToggle
-                uiHidden={uiHidden}
-                onToggle={() => setUiHidden((v) => !v)}
-            />
+            <OverlayToggle uiHidden={uiHidden} onToggle={() => setUiHidden((v) => !v)} />
 
             {!uiHidden && (
                 <UtilityDock
