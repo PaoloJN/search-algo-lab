@@ -1,5 +1,5 @@
 /**
- * Pathfinding engine for search-algo-lab.
+ * Pathfinding engine for pathfinding-lab.
  *
  * Grid model: rows x cols. walls is a Set of "r,c" keys.
  * search() pre-computes the entire run so the UI can scrub/step/replay.

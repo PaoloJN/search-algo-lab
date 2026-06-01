@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 export default function robots(): MetadataRoute.Robots {
     return {
         rules: [{ userAgent: "*", allow: "/" }],
-        sitemap: "https://search-algo-lab.vercel.app/sitemap.xml",
-        host: "https://search-algo-lab.vercel.app",
+        sitemap: "https://pathfinding-lab.vercel.app/sitemap.xml",
+        host: "https://pathfinding-lab.vercel.app",
     };
 }

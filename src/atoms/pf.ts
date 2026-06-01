@@ -17,7 +17,8 @@ export type Metrics = {
 };
 
 export const algoAtom = atom<AlgoKey>("astar");
-export const mazeTypeAtom = atom<MazeType>("none");
+// Default to Prim's so the page boots with a maze + auto-run demo.
+export const mazeTypeAtom = atom<MazeType>("prims");
 export const gridSizeAtom = atom<GridSize>("small");
 export const pathSpeedAtom = atom<Speed>("normal");
 export const mazeSpeedAtom = atom<MazeSpeed>("fast");

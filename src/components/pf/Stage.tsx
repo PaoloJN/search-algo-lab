@@ -8,6 +8,7 @@ import * as PF from "@/lib/pf-algorithms";
 import {
     ActionBar,
     ControlPanel,
+    InfoDialog,
     Legend,
     MetricsPanel,
     OverlayToggle,
@@ -62,6 +63,7 @@ export function Stage() {
     const [progress, setProgress] = useAtom(progressAtom);
     const [shortcutsOpen, setShortcutsOpen] = useAtom(shortcutsOpenAtom);
     const [uiHidden, setUiHidden] = useAtom(uiHiddenAtom);
+    const [infoOpen, setInfoOpen] = useState(false);
 
     const [tick, setTick] = useState(0);
 
@@ -85,6 +87,8 @@ export function Stage() {
     const dragRef = useRef<
         null | { mode: "wall"; erase: boolean } | { mode: "start" } | { mode: "end" }
     >(null);
+    // Auto-run a search once after the first maze finishes (initial demo).
+    const demoPendingRef = useRef(true);
     const settingsRef = useRef({
         algo,
         mazeType,
@@ -461,6 +465,11 @@ export function Stage() {
             else {
                 rafRef.current = null;
                 setStatus("idle");
+                if (demoPendingRef.current) {
+                    demoPendingRef.current = false;
+                    // small pause so the user can see the finished maze before the search kicks off
+                    setTimeout(() => startRun(), 350);
+                }
             }
         };
         rafRef.current = requestAnimationFrame(tickMaze);
@@ -719,12 +728,14 @@ export function Stage() {
             {!uiHidden && (
                 <UtilityDock
                     onShortcuts={() => setShortcutsOpen((v) => !v)}
+                    onInfo={() => setInfoOpen(true)}
                     onRandomize={randomizeEndpoints}
                 />
             )}
             {shortcutsOpen && !uiHidden && (
                 <ShortcutsCard onClose={() => setShortcutsOpen(false)} />
             )}
+            <InfoDialog open={infoOpen} onOpenChange={setInfoOpen} />
         </div>
     );
 }

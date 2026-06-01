@@ -21,6 +21,14 @@ import {
 } from "lucide-react";
 
 import { ThemeToggle } from "@/components/theme-toggle";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { ALGORITHMS, type AlgoKey, type HeuristicKind, type MazeType } from "@/lib/pf-algorithms";
 import type { GridSize, MazeSpeed, Metrics, Speed, Status } from "@/atoms/pf";
 import Image from "next/image";
@@ -553,9 +561,11 @@ export function OverlayToggle({ uiHidden, onToggle }: { uiHidden: boolean; onTog
 
 export function UtilityDock({
     onShortcuts,
+    onInfo,
     onRandomize,
 }: {
     onShortcuts: () => void;
+    onInfo: () => void;
     onRandomize: () => void;
 }) {
     return (
@@ -572,7 +582,7 @@ export function UtilityDock({
             <ThemeToggle />
             <a
                 className="icon-btn"
-                href="https://github.com/PaoloJN/search-algo-lab"
+                href="https://github.com/PaoloJN/pathfinding-lab"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Source on GitHub"
@@ -592,13 +602,105 @@ export function UtilityDock({
             <button
                 type="button"
                 className="icon-btn"
-                onClick={onShortcuts}
+                onClick={onInfo}
                 title="About"
-                aria-label="About"
+                aria-label="About this project"
             >
                 <InfoIcon size={17} />
             </button>
         </div>
+    );
+}
+
+export function InfoDialog({
+    open,
+    onOpenChange,
+}: {
+    open: boolean;
+    onOpenChange: (v: boolean) => void;
+}) {
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent>
+                <DialogHeader>
+                    <div className="flex items-center gap-3">
+                        <Image
+                            src="/logo.svg"
+                            alt="pathfinding-lab logo"
+                            width={40}
+                            height={40}
+                            className="rounded-md"
+                        />
+                        <div>
+                            <DialogTitle className="text-base">pathfinding-lab</DialogTitle>
+                            <DialogDescription className="mt-0.5">
+                                An interactive visualizer for pathfinding and maze-generation
+                                algorithms.
+                            </DialogDescription>
+                        </div>
+                    </div>
+                </DialogHeader>
+
+                <div className="text-sm text-muted-foreground leading-relaxed">
+                    Draw walls on the grid, drop a maze, then watch one of five classic search
+                    algorithms find its way from start to goal. Step through the search frame by
+                    frame, scrub the timeline, or run it instantly — and compare how each
+                    algorithm explores.
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 text-xs">
+                    <div>
+                        <div className="font-semibold text-foreground mb-1.5">Algorithms</div>
+                        <ul className="space-y-1 text-muted-foreground">
+                            <li>A* search</li>
+                            <li>Dijkstra</li>
+                            <li>Greedy best-first</li>
+                            <li>Breadth-first (BFS)</li>
+                            <li>Depth-first (DFS)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div className="font-semibold text-foreground mb-1.5">Mazes</div>
+                        <ul className="space-y-1 text-muted-foreground">
+                            <li>Recursive division</li>
+                            <li>Binary tree</li>
+                            <li>Sidewinder</li>
+                            <li>Prim&apos;s</li>
+                            <li>Hunt and kill</li>
+                            <li>Random fill</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <DialogFooter className="flex-col items-start! gap-2 text-xs text-muted-foreground sm:flex-col sm:items-start!">
+                    <div>
+                        Built by{" "}
+                        <a
+                            href="https://github.com/PaoloJN"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-foreground underline-offset-2 hover:underline"
+                        >
+                            Paolo Nessim
+                        </a>
+                        . Designed with Claude Design and implemented with Next.js, React,
+                        TypeScript, Tailwind v4, shadcn/ui and Jotai.
+                    </div>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <a
+                            href="https://github.com/PaoloJN/pathfinding-lab"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-foreground hover:underline"
+                        >
+                            <GithubIcon size={13} /> Source on GitHub
+                        </a>
+                        <span className="opacity-50">·</span>
+                        <span>MIT License · © 2026 Paolo Nessim</span>
+                    </div>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 }
 
