@@ -506,11 +506,12 @@ export function ActionBar({
             <div className="actionbar">
                 {running ? (
                     <button type="button" className="pf-btn pf-btn-primary" onClick={onPause}>
-                        <PauseIcon size={13} /> Pause
+                        <PauseIcon size={13} /> <span className="pf-btn-label">Pause</span>
                     </button>
                 ) : (
                     <button type="button" className="pf-btn pf-btn-primary" onClick={onStart}>
-                        <PlayIcon size={13} /> {finished ? "Run again" : "Start"}
+                        <PlayIcon size={13} />{" "}
+                        <span className="pf-btn-label">{finished ? "Run again" : "Start"}</span>
                     </button>
                 )}
                 <button
@@ -528,14 +529,14 @@ export function ActionBar({
                     onClick={onStep}
                     disabled={running}
                 >
-                    <SkipForwardIcon size={13} /> Step
+                    <SkipForwardIcon size={13} /> <span className="pf-btn-label">Step</span>
                 </button>
                 <span className="bar-sep" />
                 <button type="button" className="pf-btn pf-btn-ghost" onClick={onClear}>
-                    <EraserIcon size={13} /> Clear paths
+                    <EraserIcon size={13} /> <span className="pf-btn-label">Clear paths</span>
                 </button>
                 <button type="button" className="pf-btn pf-btn-ghost" onClick={onReset}>
-                    <RotateCcwIcon size={13} /> Reset
+                    <RotateCcwIcon size={13} /> <span className="pf-btn-label">Reset</span>
                 </button>
             </div>
         </div>

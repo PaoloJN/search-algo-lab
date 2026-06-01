@@ -866,11 +866,100 @@ body {
     color: var(--fg);
 }
 
-@media (max-width: 720px) {
+/* ======== Responsive ======== */
+
+/* Tablet — hide the right rail, narrow the control panel */
+@media (max-width: 860px) {
     .right-rail {
         display: none;
     }
     .control-panel {
-        width: 256px;
+        width: 248px;
+        padding: 14px;
+        top: 16px;
+        left: 16px;
+    }
+    .control-panel .divider {
+        margin: 12px 0;
+    }
+    .timeline {
+        width: min(360px, calc(100vw - 80px));
+    }
+}
+
+/* Phones — control panel becomes a slim full-width drawer below the toggle */
+@media (max-width: 540px) {
+    .overlay-toggle {
+        top: 12px;
+        height: 26px;
+        padding: 0 10px 0 8px;
+        font-size: 11px;
+    }
+    .control-panel {
+        width: calc(100vw - 16px);
+        max-width: 360px;
+        top: 50px;
+        left: 8px;
+        padding: 12px;
+        max-height: calc(100vh - 160px);
+        overflow-y: auto;
+    }
+    .panel-head {
+        gap: 8px;
+    }
+    .app-name {
+        font-size: 14px;
+    }
+    .app-sub {
+        font-size: 11px;
+    }
+    .actionbar-wrap {
+        left: 8px;
+        right: 8px;
+        bottom: 14px;
+        transform: none;
+        gap: 6px;
+        align-items: stretch;
+    }
+    .timeline {
+        width: 100%;
+    }
+    .actionbar {
+        width: 100%;
+        justify-content: center;
+        gap: 2px;
+        padding: 4px;
+    }
+    .pf-btn {
+        height: 28px;
+        padding: 0 8px;
+        font-size: 11.5px;
+        gap: 4px;
+    }
+    .bar-sep {
+        height: 16px;
+    }
+    .dock {
+        right: 8px;
+        bottom: 12px;
+        padding: 3px;
+        gap: 2px;
+    }
+    .icon-btn {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+/* Small phones — strip non-essential labels from the action bar */
+@media (max-width: 380px) {
+    .pf-btn-label {
+        display: none;
+    }
+    .pf-btn-primary .pf-btn-label {
+        display: inline;
+    }
+    .pf-btn {
+        padding: 0 9px;
     }
 }
