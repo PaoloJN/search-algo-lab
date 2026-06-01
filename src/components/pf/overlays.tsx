@@ -424,15 +424,18 @@ export function Legend() {
                 {items.map((it) => (
                     <div className="legend-row" key={it.label}>
                         <span className="swatch" style={{ background: it.c }}>
-                            {"icon" in it && it.icon && <it.icon size={10} strokeWidth={2.5} />}
+                            {"icon" in it && it.icon && <it.icon size={11} strokeWidth={2.5} />}
                         </span>
                         <span>{it.label}</span>
                     </div>
                 ))}
             </div>
             <div className="legend-hint">
-                Click + drag the grid to draw walls · drag <FlagIcon size={11} /> or{" "}
-                <TargetIcon size={11} /> to move
+                <span>Click + drag to draw walls · drag</span>
+                <FlagIcon size={12} strokeWidth={2.25} />
+                <span>or</span>
+                <TargetIcon size={12} strokeWidth={2.25} />
+                <span>to move</span>
             </div>
         </div>
     );
@@ -484,11 +487,11 @@ export function ActionBar({
             <div className="actionbar">
                 {running ? (
                     <button type="button" className="pf-btn pf-btn-primary" onClick={onPause}>
-                        <PauseIcon size={15} /> Pause
+                        <PauseIcon size={13} /> Pause
                     </button>
                 ) : (
                     <button type="button" className="pf-btn pf-btn-primary" onClick={onStart}>
-                        <PlayIcon size={15} /> {finished ? "Run again" : "Start"}
+                        <PlayIcon size={13} /> {finished ? "Run again" : "Start"}
                     </button>
                 )}
                 <button
@@ -498,7 +501,7 @@ export function ActionBar({
                     disabled={running || !canScrub}
                     aria-label="Step back"
                 >
-                    <SkipBackIcon size={15} />
+                    <SkipBackIcon size={13} />
                 </button>
                 <button
                     type="button"
@@ -506,14 +509,14 @@ export function ActionBar({
                     onClick={onStep}
                     disabled={running}
                 >
-                    <SkipForwardIcon size={15} /> Step
+                    <SkipForwardIcon size={13} /> Step
                 </button>
                 <span className="bar-sep" />
                 <button type="button" className="pf-btn pf-btn-ghost" onClick={onClear}>
-                    <EraserIcon size={15} /> Clear paths
+                    <EraserIcon size={13} /> Clear paths
                 </button>
                 <button type="button" className="pf-btn pf-btn-ghost" onClick={onReset}>
-                    <RotateCcwIcon size={15} /> Reset
+                    <RotateCcwIcon size={13} /> Reset
                 </button>
             </div>
         </div>
