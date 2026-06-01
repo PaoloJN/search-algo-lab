@@ -11,7 +11,6 @@
 
 An interactive visualizer for pathfinding and maze-generation algorithms. Step through A\*, Dijkstra, and Bidirectional search on grids you build yourself, or watch classic maze generators carve the canvas in real time.
 
-**Live demo:** [pathfinding-lab.vercel.app](https://pathfinding-lab.vercel.app)
 
 ## Features
 
