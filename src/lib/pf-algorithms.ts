@@ -8,7 +8,14 @@
 export type CellKey = string;
 export type AlgoKey = "astar" | "dijkstra" | "greedy" | "bfs" | "dfs";
 export type HeuristicKind = "manhattan" | "euclidean" | "chebyshev";
-export type MazeType = "none" | "recursive" | "random";
+export type MazeType =
+    | "none"
+    | "recursive"
+    | "random"
+    | "binarytree"
+    | "sidewinder"
+    | "prims"
+    | "huntandkill";
 
 export const K = (r: number, c: number): CellKey => r + "," + c;
 export const parse = (k: CellKey): [number, number] => {
@@ -314,6 +321,214 @@ export function mazeRecursiveDivision(
 
     divide(1, 1, cols - 2, rows - 2, choose(cols - 2, rows - 2));
     return walls;
+}
+
+/* ---- Helpers shared by carving mazes ---- */
+
+function finalizeWalls(
+    isWall: Set<CellKey>,
+    rows: number,
+    cols: number,
+    start: [number, number],
+    end: [number, number],
+): CellKey[] {
+    const sk = K(start[0], start[1]);
+    const ek = K(end[0], end[1]);
+    isWall.delete(sk);
+    isWall.delete(ek);
+    const result: CellKey[] = [];
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            const k = K(r, c);
+            if (isWall.has(k)) result.push(k);
+        }
+    }
+    // light shuffle so reveal isn't a strict left-to-right wipe
+    for (let i = result.length - 1; i > 0; i--) {
+        const j = (Math.random() * (i + 1)) | 0;
+        if (Math.abs(i - j) < 80) [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+}
+
+function fillAllAsWalls(rows: number, cols: number): Set<CellKey> {
+    const walls = new Set<CellKey>();
+    for (let r = 0; r < rows; r++)
+        for (let c = 0; c < cols; c++) walls.add(K(r, c));
+    return walls;
+}
+
+export function mazeBinaryTree(
+    rows: number,
+    cols: number,
+    start: [number, number],
+    end: [number, number],
+): CellKey[] {
+    const walls = fillAllAsWalls(rows, cols);
+    for (let r = 1; r < rows; r += 2) {
+        for (let c = 1; c < cols; c += 2) {
+            walls.delete(K(r, c));
+            const canN = r > 1;
+            const canW = c > 1;
+            if (canN && canW) {
+                if (Math.random() < 0.5) walls.delete(K(r - 1, c));
+                else walls.delete(K(r, c - 1));
+            } else if (canN) {
+                walls.delete(K(r - 1, c));
+            } else if (canW) {
+                walls.delete(K(r, c - 1));
+            }
+        }
+    }
+    return finalizeWalls(walls, rows, cols, start, end);
+}
+
+export function mazeSidewinder(
+    rows: number,
+    cols: number,
+    start: [number, number],
+    end: [number, number],
+): CellKey[] {
+    const walls = fillAllAsWalls(rows, cols);
+    for (let r = 1; r < rows; r += 2) {
+        let runStart = 1;
+        for (let c = 1; c < cols; c += 2) {
+            walls.delete(K(r, c));
+            const atEastBoundary = c >= cols - 2;
+            const atNorthBoundary = r <= 1;
+            const closeRun = atEastBoundary || (!atNorthBoundary && Math.random() < 0.35);
+            if (closeRun) {
+                if (!atNorthBoundary) {
+                    const pick = runStart + 2 * Math.floor(Math.random() * ((c - runStart) / 2 + 1));
+                    walls.delete(K(r - 1, pick));
+                }
+                runStart = c + 2;
+            } else {
+                walls.delete(K(r, c + 1));
+            }
+        }
+    }
+    return finalizeWalls(walls, rows, cols, start, end);
+}
+
+export function mazePrims(
+    rows: number,
+    cols: number,
+    start: [number, number],
+    end: [number, number],
+): CellKey[] {
+    const walls = fillAllAsWalls(rows, cols);
+    const inMaze = new Set<CellKey>();
+    const frontier: [number, number, number, number][] = []; // [r,c,wr,wc] cell + wall between
+
+    function add(r: number, c: number) {
+        inMaze.add(K(r, c));
+        walls.delete(K(r, c));
+        const cands: [number, number, number, number][] = [
+            [r - 2, c, r - 1, c],
+            [r + 2, c, r + 1, c],
+            [r, c - 2, r, c - 1],
+            [r, c + 2, r, c + 1],
+        ];
+        for (const [nr, nc, wr, wc] of cands) {
+            if (nr < 1 || nc < 1 || nr >= rows - 1 || nc >= cols - 1) continue;
+            if (inMaze.has(K(nr, nc))) continue;
+            frontier.push([nr, nc, wr, wc]);
+        }
+    }
+
+    const sr = 1 + 2 * Math.floor(Math.random() * Math.max(1, Math.floor((rows - 1) / 2)));
+    const sc = 1 + 2 * Math.floor(Math.random() * Math.max(1, Math.floor((cols - 1) / 2)));
+    add(sr, sc);
+
+    while (frontier.length) {
+        const idx = (Math.random() * frontier.length) | 0;
+        const [r, c, wr, wc] = frontier.splice(idx, 1)[0];
+        if (inMaze.has(K(r, c))) continue;
+        walls.delete(K(wr, wc));
+        add(r, c);
+    }
+    return finalizeWalls(walls, rows, cols, start, end);
+}
+
+export function mazeHuntAndKill(
+    rows: number,
+    cols: number,
+    start: [number, number],
+    end: [number, number],
+): CellKey[] {
+    const walls = fillAllAsWalls(rows, cols);
+    const visited = new Set<CellKey>();
+
+    function visit(r: number, c: number) {
+        visited.add(K(r, c));
+        walls.delete(K(r, c));
+    }
+
+    function unvisitedNeighbors(r: number, c: number): [number, number, number, number][] {
+        const cands: [number, number, number, number][] = [
+            [r - 2, c, r - 1, c],
+            [r + 2, c, r + 1, c],
+            [r, c - 2, r, c - 1],
+            [r, c + 2, r, c + 1],
+        ];
+        return cands.filter(
+            ([nr, nc]) =>
+                nr >= 1 &&
+                nc >= 1 &&
+                nr < rows - 1 &&
+                nc < cols - 1 &&
+                !visited.has(K(nr, nc)),
+        );
+    }
+
+    function visitedNeighbors(r: number, c: number): [number, number, number, number][] {
+        const cands: [number, number, number, number][] = [
+            [r - 2, c, r - 1, c],
+            [r + 2, c, r + 1, c],
+            [r, c - 2, r, c - 1],
+            [r, c + 2, r, c + 1],
+        ];
+        return cands.filter(
+            ([nr, nc]) =>
+                nr >= 1 && nc >= 1 && nr < rows - 1 && nc < cols - 1 && visited.has(K(nr, nc)),
+        );
+    }
+
+    let r = 1 + 2 * Math.floor(Math.random() * Math.max(1, Math.floor((rows - 1) / 2)));
+    let c = 1 + 2 * Math.floor(Math.random() * Math.max(1, Math.floor((cols - 1) / 2)));
+    visit(r, c);
+
+    while (true) {
+        const unv = unvisitedNeighbors(r, c);
+        if (unv.length) {
+            const [nr, nc, wr, wc] = unv[(Math.random() * unv.length) | 0];
+            walls.delete(K(wr, wc));
+            visit(nr, nc);
+            r = nr;
+            c = nc;
+        } else {
+            // hunt
+            let found = false;
+            outer: for (let hr = 1; hr < rows - 1; hr += 2) {
+                for (let hc = 1; hc < cols - 1; hc += 2) {
+                    if (visited.has(K(hr, hc))) continue;
+                    const vn = visitedNeighbors(hr, hc);
+                    if (vn.length) {
+                        const [, , wr, wc] = vn[(Math.random() * vn.length) | 0];
+                        walls.delete(K(wr, wc));
+                        visit(hr, hc);
+                        r = hr;
+                        c = hc;
+                        found = true;
+                        break outer;
+                    }
+                }
+            }
+            if (!found) break;
+        }
+    }
+    return finalizeWalls(walls, rows, cols, start, end);
 }
 
 export const ALGORITHMS: Record<

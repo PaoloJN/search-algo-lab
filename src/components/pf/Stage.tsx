@@ -105,6 +105,25 @@ export function Stage() {
 
     const busy = status === "running" || status === "mazing";
 
+    function mazeFor(t: Exclude<PF.MazeType, "none">, rows: number, cols: number): PF.CellKey[] {
+        const s = startRef.current;
+        const e = endRef.current;
+        switch (t) {
+            case "recursive":
+                return PF.mazeRecursiveDivision(rows, cols, s, e);
+            case "random":
+                return PF.mazeRandom(rows, cols, s, e);
+            case "binarytree":
+                return PF.mazeBinaryTree(rows, cols, s, e);
+            case "sidewinder":
+                return PF.mazeSidewinder(rows, cols, s, e);
+            case "prims":
+                return PF.mazePrims(rows, cols, s, e);
+            case "huntandkill":
+                return PF.mazeHuntAndKill(rows, cols, s, e);
+        }
+    }
+
     /* -------- geometry -------- */
     const computeGeom = useCallback(() => {
         const wrap = wrapRef.current;
@@ -112,16 +131,10 @@ export function Stage() {
         const W = wrap.clientWidth;
         const H = wrap.clientHeight;
         const cell = CELL_PX[settingsRef.current.gridSize];
-        const narrow = W < 760;
-        const padLeft = narrow ? 16 : 332;
-        const padRight = narrow ? 16 : 252;
-        const padTop = 20;
-        const padBottom = 150;
-        const availW = W - padLeft - padRight;
-        const cols = Math.max(6, Math.floor(availW / cell));
-        const rows = Math.max(6, Math.floor((H - padTop - padBottom) / cell));
-        const ox = Math.round(padLeft + (availW - cols * cell) / 2);
-        const oy = Math.round(padTop + (H - padTop - padBottom - rows * cell) / 2);
+        const cols = Math.max(6, Math.floor(W / cell));
+        const rows = Math.max(6, Math.floor(H / cell));
+        const ox = Math.round((W - cols * cell) / 2);
+        const oy = Math.round((H - rows * cell) / 2);
         geomRef.current = { cols, rows, cell, ox, oy };
     }, []);
 
@@ -361,9 +374,9 @@ export function Stage() {
         setTick((t) => t + 1);
     }
 
-    function generateMaze(type?: "recursive" | "random") {
+    function generateMaze(type?: Exclude<PF.MazeType, "none">) {
         const current = settingsRef.current.mazeType;
-        const t: "recursive" | "random" | null =
+        const t: Exclude<PF.MazeType, "none"> | null =
             type ?? (current === "none" ? null : current);
         if (!t) return;
         if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
@@ -380,10 +393,7 @@ export function Stage() {
         setProgress(0);
         setMetrics({ explored: 0, frontierSize: 0, pathLen: null, total: 0, elapsed: null });
         const { rows, cols } = geomRef.current;
-        const list =
-            t === "random"
-                ? PF.mazeRandom(rows, cols, startRef.current, endRef.current)
-                : PF.mazeRecursiveDivision(rows, cols, startRef.current, endRef.current);
+        const list = mazeFor(t, rows, cols);
         wallsRef.current = new Set();
         setStatus("mazing");
         let i = 0;
@@ -533,7 +543,9 @@ export function Stage() {
             } else if (e.key.toLowerCase() === "r") {
                 resetGrid();
             } else if (e.key.toLowerCase() === "m") {
-                generateMaze(mazeType === "none" ? "recursive" : (mazeType as "recursive" | "random"));
+                const fallback: Exclude<PF.MazeType, "none"> = "recursive";
+                const cur = settingsRef.current.mazeType;
+                generateMaze(cur === "none" ? fallback : cur);
             } else if (e.key === "Tab") {
                 e.preventDefault();
                 const order: PF.AlgoKey[] = ["astar", "dijkstra", "greedy", "bfs", "dfs"];

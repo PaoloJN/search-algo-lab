@@ -149,6 +149,10 @@ const ALGO_OPTIONS: { value: AlgoKey; label: string }[] = [
 const MAZE_OPTIONS: { value: MazeType; label: string }[] = [
     { value: "none", label: "None" },
     { value: "recursive", label: "Recursive division" },
+    { value: "binarytree", label: "Binary tree" },
+    { value: "sidewinder", label: "Sidewinder" },
+    { value: "prims", label: "Prim's" },
+    { value: "huntandkill", label: "Hunt and kill" },
     { value: "random", label: "Random fill" },
 ];
 
