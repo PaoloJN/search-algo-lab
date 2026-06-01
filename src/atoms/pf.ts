@@ -34,3 +34,4 @@ export const metricsAtom = atom<Metrics>({
 });
 export const progressAtom = atom(0);
 export const shortcutsOpenAtom = atom(false);
+export const uiHiddenAtom = atom(false);

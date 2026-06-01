@@ -25,6 +25,7 @@ import {
     progressAtom,
     shortcutsOpenAtom,
     statusAtom,
+    uiHiddenAtom,
     type GridSize,
     type MazeSpeed,
     type Speed,
@@ -59,6 +60,7 @@ export function Stage() {
     const [metrics, setMetrics] = useAtom(metricsAtom);
     const [progress, setProgress] = useAtom(progressAtom);
     const [shortcutsOpen, setShortcutsOpen] = useAtom(shortcutsOpenAtom);
+    const [uiHidden, setUiHidden] = useAtom(uiHiddenAtom);
 
     const [tick, setTick] = useState(0);
 
@@ -335,6 +337,51 @@ export function Stage() {
         } else setStatus("paused");
     }
 
+    function stepBack() {
+        if (busy) return;
+        const run = runRef.current;
+        if (!run) return;
+        if (frameRef.current <= 0) return;
+        frameRef.current = Math.max(0, frameRef.current - 1);
+        applyFrame(run, frameRef.current);
+        if (frameRef.current === 0) {
+            stateRef.current = {
+                visited: new Set(),
+                frontier: new Set(),
+                pathSet: new Set(),
+                current: null,
+                exploredCount: 0,
+            };
+            drawRef.current();
+            setStatus("idle");
+        } else setStatus("paused");
+    }
+
+    function randomizeEndpoints() {
+        if (busy) return;
+        const { rows, cols } = geomRef.current;
+        const totalCells = rows * cols;
+        if (totalCells < 4) return;
+        const walls = wallsRef.current;
+        const pickRandom = (): [number, number] => [
+            Math.floor(Math.random() * rows),
+            Math.floor(Math.random() * cols),
+        ];
+        let s: [number, number] = pickRandom();
+        let tries = 0;
+        while (walls.has(PF.K(s[0], s[1])) && tries++ < 100) s = pickRandom();
+        let e: [number, number] = pickRandom();
+        tries = 0;
+        while (
+            (walls.has(PF.K(e[0], e[1])) || (e[0] === s[0] && e[1] === s[1])) &&
+            tries++ < 100
+        )
+            e = pickRandom();
+        startRef.current = s;
+        endRef.current = e;
+        afterEdit();
+    }
+
     function scrub(p: number) {
         const run = runRef.current;
         if (!run) return;
@@ -546,10 +593,16 @@ export function Stage() {
                 else startRun();
             } else if (e.key.toLowerCase() === "s") {
                 stepOnce();
+            } else if (e.key.toLowerCase() === "b") {
+                stepBack();
             } else if (e.key.toLowerCase() === "c") {
                 clearPaths();
             } else if (e.key.toLowerCase() === "r") {
                 resetGrid();
+            } else if (e.key.toLowerCase() === "h") {
+                setUiHidden((v) => !v);
+            } else if (e.key.toLowerCase() === "x") {
+                randomizeEndpoints();
             } else if (e.key.toLowerCase() === "m") {
                 const fallback: Exclude<PF.MazeType, "none"> = "recursive";
                 const cur = settingsRef.current.mazeType;
@@ -610,49 +663,59 @@ export function Stage() {
                 </div>
             </div>
 
-            <ControlPanel
-                algo={algo}
-                setAlgo={setAlgo}
-                mazeType={mazeType}
-                setMazeType={setMazeType}
-                gridSize={gridSize}
-                setGridSize={setGridSize}
-                pathSpeed={pathSpeed}
-                setPathSpeed={setPathSpeed}
-                mazeSpeed={mazeSpeed}
-                setMazeSpeed={setMazeSpeed}
-                diagonal={diagonal}
-                setDiagonal={setDiagonal}
-                heuristic={heuristic}
-                setHeuristic={setHeuristic}
-                status={status}
-                busy={busy}
+            {!uiHidden && (
+                <>
+                    <ControlPanel
+                        algo={algo}
+                        setAlgo={setAlgo}
+                        mazeType={mazeType}
+                        setMazeType={setMazeType}
+                        gridSize={gridSize}
+                        setGridSize={setGridSize}
+                        pathSpeed={pathSpeed}
+                        setPathSpeed={setPathSpeed}
+                        mazeSpeed={mazeSpeed}
+                        setMazeSpeed={setMazeSpeed}
+                        diagonal={diagonal}
+                        setDiagonal={setDiagonal}
+                        heuristic={heuristic}
+                        setHeuristic={setHeuristic}
+                        status={status}
+                        busy={busy}
+                    />
+
+                    <div className="right-rail">
+                        <MetricsPanel
+                            metrics={metrics}
+                            algo={algo}
+                            heuristic={heuristic}
+                            diagonal={diagonal}
+                            status={status}
+                        />
+                        <Legend />
+                    </div>
+
+                    <ActionBar
+                        status={status}
+                        onStart={startRun}
+                        onPause={pauseRun}
+                        onStep={stepOnce}
+                        onStepBack={stepBack}
+                        onClear={clearPaths}
+                        onReset={resetGrid}
+                        progress={progress}
+                        onScrub={scrub}
+                        canScrub={!!runRef.current}
+                    />
+                </>
+            )}
+
+            <UtilityDock
+                onShortcuts={() => setShortcutsOpen((v) => !v)}
+                onRandomize={randomizeEndpoints}
+                onToggleUi={() => setUiHidden((v) => !v)}
+                uiHidden={uiHidden}
             />
-
-            <div className="right-rail">
-                <MetricsPanel
-                    metrics={metrics}
-                    algo={algo}
-                    heuristic={heuristic}
-                    diagonal={diagonal}
-                    status={status}
-                />
-                <Legend />
-            </div>
-
-            <ActionBar
-                status={status}
-                onStart={startRun}
-                onPause={pauseRun}
-                onStep={stepOnce}
-                onClear={clearPaths}
-                onReset={resetGrid}
-                progress={progress}
-                onScrub={scrub}
-                canScrub={!!runRef.current}
-            />
-
-            <UtilityDock onShortcuts={() => setShortcutsOpen((v) => !v)} />
             {shortcutsOpen && <ShortcutsCard onClose={() => setShortcutsOpen(false)} />}
         </div>
     );

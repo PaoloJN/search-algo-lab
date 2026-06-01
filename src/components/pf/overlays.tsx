@@ -4,6 +4,8 @@ import * as React from "react";
 import {
     ChevronDownIcon,
     EraserIcon,
+    EyeIcon,
+    EyeOffIcon,
     FlagIcon,
     GithubIcon,
     InfoIcon,
@@ -11,6 +13,8 @@ import {
     PauseIcon,
     PlayIcon,
     RotateCcwIcon,
+    ShuffleIcon,
+    SkipBackIcon,
     SkipForwardIcon,
     TargetIcon,
     XIcon,
@@ -443,6 +447,7 @@ export function ActionBar({
     onStart,
     onPause,
     onStep,
+    onStepBack,
     onClear,
     onReset,
     progress,
@@ -453,6 +458,7 @@ export function ActionBar({
     onStart: () => void;
     onPause: () => void;
     onStep: () => void;
+    onStepBack: () => void;
     onClear: () => void;
     onReset: () => void;
     progress: number;
@@ -493,6 +499,15 @@ export function ActionBar({
                 <button
                     type="button"
                     className="pf-btn pf-btn-ghost"
+                    onClick={onStepBack}
+                    disabled={running || !canScrub}
+                    aria-label="Step back"
+                >
+                    <SkipBackIcon size={15} />
+                </button>
+                <button
+                    type="button"
+                    className="pf-btn pf-btn-ghost"
                     onClick={onStep}
                     disabled={running}
                 >
@@ -512,9 +527,37 @@ export function ActionBar({
 
 /* -------------------- Utility dock -------------------- */
 
-export function UtilityDock({ onShortcuts }: { onShortcuts: () => void }) {
+export function UtilityDock({
+    onShortcuts,
+    onRandomize,
+    onToggleUi,
+    uiHidden,
+}: {
+    onShortcuts: () => void;
+    onRandomize: () => void;
+    onToggleUi: () => void;
+    uiHidden: boolean;
+}) {
     return (
         <div className="dock">
+            <button
+                type="button"
+                className="icon-btn"
+                onClick={onToggleUi}
+                title={uiHidden ? "Show overlay" : "Hide overlay"}
+                aria-label={uiHidden ? "Show overlay" : "Hide overlay"}
+            >
+                {uiHidden ? <EyeIcon size={17} /> : <EyeOffIcon size={17} />}
+            </button>
+            <button
+                type="button"
+                className="icon-btn"
+                onClick={onRandomize}
+                title="Randomize start and goal"
+                aria-label="Randomize start and goal"
+            >
+                <ShuffleIcon size={17} />
+            </button>
             <ThemeToggle />
             <a
                 className="icon-btn"
@@ -553,10 +596,13 @@ export function UtilityDock({ onShortcuts }: { onShortcuts: () => void }) {
 export function ShortcutsCard({ onClose }: { onClose: () => void }) {
     const rows: [string, string][] = [
         ["Run / pause", "␣"],
-        ["Step once", "S"],
+        ["Step forward", "S"],
+        ["Step back", "B"],
         ["Clear paths", "C"],
         ["Reset grid", "R"],
         ["Generate maze", "M"],
+        ["Randomize start/goal", "X"],
+        ["Hide / show overlay", "H"],
         ["Cycle algorithm", "⇥"],
     ];
     return (
