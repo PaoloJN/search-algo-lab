@@ -527,28 +527,36 @@ export function ActionBar({
 
 /* -------------------- Utility dock -------------------- */
 
+export function OverlayToggle({
+    uiHidden,
+    onToggle,
+}: {
+    uiHidden: boolean;
+    onToggle: () => void;
+}) {
+    return (
+        <button
+            type="button"
+            className="overlay-toggle"
+            onClick={onToggle}
+            aria-label={uiHidden ? "Show overlay" : "Hide overlay"}
+        >
+            {uiHidden ? <EyeIcon size={15} /> : <EyeOffIcon size={15} />}
+            <span>{uiHidden ? "Show UI" : "Hide UI"}</span>
+            <span className="kbd-key">H</span>
+        </button>
+    );
+}
+
 export function UtilityDock({
     onShortcuts,
     onRandomize,
-    onToggleUi,
-    uiHidden,
 }: {
     onShortcuts: () => void;
     onRandomize: () => void;
-    onToggleUi: () => void;
-    uiHidden: boolean;
 }) {
     return (
         <div className="dock">
-            <button
-                type="button"
-                className="icon-btn"
-                onClick={onToggleUi}
-                title={uiHidden ? "Show overlay" : "Hide overlay"}
-                aria-label={uiHidden ? "Show overlay" : "Hide overlay"}
-            >
-                {uiHidden ? <EyeIcon size={17} /> : <EyeOffIcon size={17} />}
-            </button>
             <button
                 type="button"
                 className="icon-btn"

@@ -10,6 +10,7 @@ import {
     ControlPanel,
     Legend,
     MetricsPanel,
+    OverlayToggle,
     ShortcutsCard,
     UtilityDock,
 } from "./overlays";
@@ -710,13 +711,20 @@ export function Stage() {
                 </>
             )}
 
-            <UtilityDock
-                onShortcuts={() => setShortcutsOpen((v) => !v)}
-                onRandomize={randomizeEndpoints}
-                onToggleUi={() => setUiHidden((v) => !v)}
+            <OverlayToggle
                 uiHidden={uiHidden}
+                onToggle={() => setUiHidden((v) => !v)}
             />
-            {shortcutsOpen && <ShortcutsCard onClose={() => setShortcutsOpen(false)} />}
+
+            {!uiHidden && (
+                <UtilityDock
+                    onShortcuts={() => setShortcutsOpen((v) => !v)}
+                    onRandomize={randomizeEndpoints}
+                />
+            )}
+            {shortcutsOpen && !uiHidden && (
+                <ShortcutsCard onClose={() => setShortcutsOpen(false)} />
+            )}
         </div>
     );
 }
