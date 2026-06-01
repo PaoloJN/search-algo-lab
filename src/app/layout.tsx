@@ -6,7 +6,7 @@ import { Provider as JotaiProvider } from "jotai";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
-const SITE_URL = "https://pathfinding.paolonessim.com";
+const SITE_URL = "https://pathfinding-lab.vercel.app";
 const TITLE = "pathfinding-lab · Pathfinding visualizer";
 const DESCRIPTION =
     "Interactive visualizer for pathfinding (A*, Dijkstra, BFS, DFS, Greedy) and maze-generation algorithms.";
