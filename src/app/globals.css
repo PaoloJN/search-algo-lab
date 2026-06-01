@@ -156,8 +156,6 @@ body {
 
 .stage {
     background:
-        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px) 0 0 / 30px 30px,
-        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px) 0 0 / 30px 30px,
         radial-gradient(120% 90% at 50% 0%, var(--bg-elevated) 0%, var(--bg) 60%);
 }
 
