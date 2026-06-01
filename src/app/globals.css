@@ -8,112 +8,118 @@
         var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-    --radius-sm: calc(var(--radius) - 4px);
-    --radius-md: calc(var(--radius) - 2px);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) + 4px);
+    /* Linear/Vercel-tight radii from the design system */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 12px;
+    --radius-2xl: 16px;
 
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
-    --color-card: var(--card);
-    --color-card-foreground: var(--card-foreground);
-    --color-popover: var(--popover);
-    --color-popover-foreground: var(--popover-foreground);
-    --color-primary: var(--primary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-secondary: var(--secondary);
-    --color-secondary-foreground: var(--secondary-foreground);
-    --color-muted: var(--muted);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-accent: var(--accent);
-    --color-accent-foreground: var(--accent-foreground);
-    --color-destructive: var(--destructive);
+    /* shadcn aliases — wired to the design's surface/foreground tokens below */
+    --color-background: var(--bg);
+    --color-foreground: var(--fg);
+    --color-card: var(--bg-elevated);
+    --color-card-foreground: var(--fg);
+    --color-popover: var(--bg-overlay);
+    --color-popover-foreground: var(--fg);
+    --color-primary: var(--accent);
+    --color-primary-foreground: var(--accent-fg);
+    --color-secondary: var(--bg-elevated);
+    --color-secondary-foreground: var(--fg);
+    --color-muted: var(--bg-elevated);
+    --color-muted-foreground: var(--fg-muted);
+    --color-accent: var(--bg-overlay);
+    --color-accent-foreground: var(--fg);
+    --color-destructive: var(--danger);
     --color-border: var(--border);
-    --color-input: var(--input);
+    --color-input: var(--border-strong);
     --color-ring: var(--ring);
-    --color-chart-1: var(--chart-1);
-    --color-chart-2: var(--chart-2);
-    --color-chart-3: var(--chart-3);
-    --color-chart-4: var(--chart-4);
-    --color-chart-5: var(--chart-5);
 
     --color-success: var(--success);
     --color-warning: var(--warning);
 }
 
+/* ======== Light (default) — Paolo DS ======== */
 :root {
-    --radius: 0.625rem;
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
+    color-scheme: light;
+    --radius: 8px;
 
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
+    --bg: oklch(1 0 0);
+    --bg-elevated: oklch(0.985 0.002 264);
+    --bg-overlay: oklch(1 0 0);
+    --bg-inset: oklch(0.965 0.003 264);
+
+    --fg: oklch(0.16 0.005 264);
+    --fg-muted: oklch(0.44 0.006 264);
+    --fg-subtle: oklch(0.6 0.005 264);
+    --fg-disabled: oklch(0.75 0.004 264);
+
+    --border: oklch(0.915 0.003 264);
+    --border-strong: oklch(0.86 0.004 264);
+    --border-subtle: oklch(0.945 0.003 264);
+
+    --ring: oklch(0.55 0.18 258);
+
+    --accent: oklch(0.6 0.21 25);
+    --accent-hover: oklch(0.55 0.21 25);
+    --accent-fg: oklch(0.99 0.003 250);
+    --accent-soft: oklch(0.96 0.04 25);
+    --accent-soft-fg: oklch(0.45 0.2 25);
 
     --success: oklch(0.5 0.14 155);
+    --success-soft: oklch(0.94 0.04 155);
     --warning: oklch(0.62 0.14 75);
+    --warning-soft: oklch(0.96 0.05 75);
+    --danger: oklch(0.55 0.22 25);
+    --danger-soft: oklch(0.95 0.04 25);
 
     /* Visualization palette — light */
-    --grid-line: oklch(0.92 0 0);
-    --cell-empty: oklch(0.99 0 0);
-    --cell-wall: oklch(0.18 0 0);
+    --grid-line: oklch(0 0 0 / 0.07);
+    --cell-empty: oklch(1 0 0);
+    --cell-wall: oklch(0.22 0 0);
     --cell-frontier: oklch(0.78 0.13 162);
     --cell-visited: oklch(0.78 0.09 232);
     --cell-path: oklch(0.84 0.16 84);
     --cell-temp: oklch(0.78 0.18 50);
 }
 
+/* ======== Dark ======== */
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
+    color-scheme: dark;
 
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
+    --bg: oklch(0.145 0.003 250);
+    --bg-elevated: oklch(0.175 0.003 250);
+    --bg-overlay: oklch(0.205 0.004 250);
+    --bg-inset: oklch(0.125 0.003 250);
+
+    --fg: oklch(0.985 0.002 250);
+    --fg-muted: oklch(0.68 0.004 250);
+    --fg-subtle: oklch(0.48 0.005 250);
+    --fg-disabled: oklch(0.35 0.005 250);
+
+    --border: oklch(0.25 0.004 250);
+    --border-strong: oklch(0.31 0.005 250);
+    --border-subtle: oklch(0.2 0.004 250);
+
+    --ring: oklch(0.72 0.21 25);
+
+    --accent: oklch(0.68 0.22 25);
+    --accent-hover: oklch(0.72 0.22 25);
+    --accent-fg: oklch(0.99 0.003 250);
+    --accent-soft: oklch(0.3 0.1 25);
+    --accent-soft-fg: oklch(0.85 0.13 25);
 
     --success: oklch(0.72 0.15 155);
+    --success-soft: oklch(0.28 0.07 155);
     --warning: oklch(0.78 0.13 75);
+    --warning-soft: oklch(0.32 0.07 75);
+    --danger: oklch(0.68 0.19 25);
+    --danger-soft: oklch(0.3 0.09 25);
 
     /* Visualization palette — dark */
-    --grid-line: oklch(0.27 0 0);
-    --cell-empty: oklch(0.145 0 0);
-    --cell-wall: oklch(0.32 0 0);
+    --grid-line: oklch(1 0 0 / 0.045);
+    --cell-empty: oklch(0.145 0.003 250);
+    --cell-wall: oklch(0.32 0.004 250);
     --cell-frontier: oklch(0.62 0.13 162);
     --cell-visited: oklch(0.55 0.1 232);
     --cell-path: oklch(0.78 0.17 84);
@@ -127,20 +133,24 @@
     body {
         @apply bg-background text-foreground;
         font-family: var(--font-sans);
+        font-feature-settings: "ss01", "cv11";
         -webkit-font-smoothing: antialiased;
         margin: 0;
         overflow: hidden;
     }
 }
 
-/* Stage = the page surface */
+/* Stage = the page surface, with the subtle dot grid + radial top glow */
 .stage {
     position: fixed;
     inset: 0;
-    background-color: var(--background);
+    background:
+        linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 30px 30px,
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 / 30px 30px,
+        radial-gradient(120% 90% at 50% 0%, var(--bg-elevated) 0%, var(--bg) 60%);
 }
 
-/* ======== Grid cell visualization ======== */
+/* ======== Grid cell visualization (simple direct backgrounds) ======== */
 @keyframes pop-in {
     0% {
         transform: scale(1);
