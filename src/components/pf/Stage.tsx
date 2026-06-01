@@ -370,6 +370,14 @@ export function Stage() {
         wallsRef.current = new Set();
         computeGeom();
         placeEndpoints();
+        // Force the canvas to fully reinitialize. Setting width/height clears
+        // every pixel — without this, the next draw skips the resize branch
+        // and the old grid lines bleed through under the new cell size.
+        const canvas = canvasRef.current;
+        if (canvas) {
+            canvas.width = 0;
+            canvas.height = 0;
+        }
         clearPaths();
         setTick((t) => t + 1);
     }
