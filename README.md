@@ -1,4 +1,13 @@
-# pathfinding-lab
+
+
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="public/logo-light.svg">
+    <img src="public/icon-192.png" alt="" width="40" align="left" style="vertical-align: middle;">
+  </picture>
+  &nbsp;Pathfinding Lab
+</h1>
+
 
 An interactive visualizer for pathfinding and maze-generation algorithms. Step through A\*, Dijkstra, and Bidirectional search on grids you build yourself, or watch classic maze generators carve the canvas in real time.
 
