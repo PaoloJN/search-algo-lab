@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://pathfinding-lab.vercel.app">Live demo</a>
+  <a href="https://pathfindinglab.vercel.app">Live demo</a>
   &middot;
   <a href="#features">Features</a>
   &middot;
