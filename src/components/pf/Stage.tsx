@@ -41,7 +41,7 @@ const COLORS = {
     frontier: "#3e9b7e",
     visited: "#38597a",
     path: "#aeb84e",
-    wall: "#34373d",
+    wall: "#22252b",
     start: "#34a373",
     end: "#d9694f",
     current: "#5cc0a0",

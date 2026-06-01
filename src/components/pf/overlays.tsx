@@ -20,7 +20,7 @@ import {
     XIcon,
 } from "lucide-react";
 
-import { ThemeToggle } from "@/components/theme-toggle";
+// import { ThemeToggle } from "@/components/theme-toggle";
 import {
     Dialog,
     DialogContent,
@@ -579,7 +579,7 @@ export function UtilityDock({
             >
                 <ShuffleIcon size={17} />
             </button>
-            <ThemeToggle />
+            {/* <ThemeToggle /> */}
             <a
                 className="icon-btn"
                 href="https://github.com/PaoloJN/pathfinding-lab"
@@ -641,17 +641,17 @@ export function InfoDialog({
                     </div>
                 </DialogHeader>
 
-                <div className="text-sm text-muted-foreground leading-relaxed">
+                <div className="text-muted-foreground text-sm leading-relaxed">
                     Draw walls on the grid, drop a maze, then watch one of five classic search
                     algorithms find its way from start to goal. Step through the search frame by
-                    frame, scrub the timeline, or run it instantly — and compare how each
-                    algorithm explores.
+                    frame, scrub the timeline, or run it instantly — and compare how each algorithm
+                    explores.
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 text-xs">
                     <div>
-                        <div className="font-semibold text-foreground mb-1.5">Algorithms</div>
-                        <ul className="space-y-1 text-muted-foreground">
+                        <div className="text-foreground mb-1.5 font-semibold">Algorithms</div>
+                        <ul className="text-muted-foreground space-y-1">
                             <li>A* search</li>
                             <li>Dijkstra</li>
                             <li>Greedy best-first</li>
@@ -660,8 +660,8 @@ export function InfoDialog({
                         </ul>
                     </div>
                     <div>
-                        <div className="font-semibold text-foreground mb-1.5">Mazes</div>
-                        <ul className="space-y-1 text-muted-foreground">
+                        <div className="text-foreground mb-1.5 font-semibold">Mazes</div>
+                        <ul className="text-muted-foreground space-y-1">
                             <li>Recursive division</li>
                             <li>Binary tree</li>
                             <li>Sidewinder</li>
@@ -672,7 +672,7 @@ export function InfoDialog({
                     </div>
                 </div>
 
-                <DialogFooter className="flex-col items-start! gap-2 text-xs text-muted-foreground sm:flex-col sm:items-start!">
+                <DialogFooter className="text-muted-foreground flex-col items-start! gap-2 text-xs sm:flex-col sm:items-start!">
                     <div>
                         Built by{" "}
                         <a
@@ -686,12 +686,12 @@ export function InfoDialog({
                         . Designed with Claude Design and implemented with Next.js, React,
                         TypeScript, Tailwind v4, shadcn/ui and Jotai.
                     </div>
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1">
                         <a
                             href="https://github.com/PaoloJN/pathfinding-lab"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-foreground hover:underline"
+                            className="text-foreground inline-flex items-center gap-1.5 hover:underline"
                         >
                             <GithubIcon size={13} /> Source on GitHub
                         </a>

@@ -6,8 +6,7 @@
 @theme inline {
     --font-sans:
         var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --font-mono:
-        var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
     --radius-sm: 4px;
     --radius-md: 6px;
@@ -61,6 +60,7 @@
 
     --accent: oklch(0.55 0.17 258);
     --accent-hover: oklch(0.5 0.17 258);
+
     --accent-active: oklch(0.45 0.17 258);
     --accent-fg: oklch(0.99 0.003 250);
     --accent-soft: oklch(0.96 0.04 258);
@@ -82,7 +82,7 @@
     --cell-frontier: #3e9b7e;
     --cell-visited: #38597a;
     --cell-path: #aeb84e;
-    --cell-wall: #34373d;
+    --cell-wall: #22252b;
     --cell-start: #34a373;
     --cell-end: #d9694f;
     --cell-current: #5cc0a0;
@@ -155,8 +155,7 @@ body {
 }
 
 .stage {
-    background:
-        radial-gradient(120% 90% at 50% 0%, var(--bg-elevated) 0%, var(--bg) 60%);
+    background: radial-gradient(120% 90% at 50% 0%, var(--bg-elevated) 0%, var(--bg) 60%);
 }
 
 .grid-wrap {
@@ -181,9 +180,10 @@ body {
 .panel {
     position: absolute;
     z-index: 5;
-    background: color-mix(in oklab, var(--bg-elevated) 86%, transparent);
-    backdrop-filter: blur(16px) saturate(1.2);
-    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    /* background: color-mix(in oklab, var(--bg-elevated) 86%, transparent); */
+    background: var(--bg-elevated);
+    /* backdrop-filter: blur(16px) saturate(1.2); */
+    /* -webkit-backdrop-filter: blur(16px) saturate(1.2); */
     border: 1px solid var(--border);
     border-radius: var(--radius-xl);
     box-shadow:
@@ -275,8 +275,7 @@ body {
     color: var(--fg);
     border: 1px solid var(--border-strong);
     border-radius: var(--radius-lg);
-    font:
-        500 13px/1 var(--font-sans);
+    font: 500 13px/1 var(--font-sans);
     cursor: pointer;
     outline: none;
     transition:
@@ -319,8 +318,7 @@ body {
     border: 0;
     background: transparent;
     color: var(--fg-muted);
-    font:
-        500 11.5px/1 var(--font-sans);
+    font: 500 11.5px/1 var(--font-sans);
     border-radius: var(--radius-md);
     cursor: pointer;
     transition:
@@ -410,8 +408,7 @@ body {
     height: 19px;
     padding: 0 7px;
     border-radius: var(--radius-sm);
-    font:
-        600 10px/1 var(--font-mono);
+    font: 600 10px/1 var(--font-mono);
     text-transform: uppercase;
     letter-spacing: 0.04em;
 }
@@ -438,8 +435,7 @@ body {
     height: 22px;
     padding: 0 8px 0 7px;
     border-radius: 999px;
-    font:
-        600 10px/1 var(--font-mono);
+    font: 600 10px/1 var(--font-mono);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     border: 1px solid var(--border);
@@ -523,13 +519,11 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    font:
-        600 12px/1 var(--font-sans);
+    font: 600 12px/1 var(--font-sans);
     color: var(--fg);
 }
 .metrics-chip {
-    font:
-        500 9.5px/1 var(--font-mono);
+    font: 500 9.5px/1 var(--font-mono);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--fg-muted);
@@ -552,15 +546,13 @@ body {
     padding: 10px 12px;
 }
 .stat-label {
-    font:
-        500 10px/1 var(--font-sans);
+    font: 500 10px/1 var(--font-sans);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--fg-subtle);
 }
 .stat-value {
-    font:
-        600 21px/1.1 var(--font-mono);
+    font: 600 21px/1.1 var(--font-mono);
     color: var(--fg);
     margin-top: 5px;
     font-feature-settings: "tnum";
@@ -569,8 +561,7 @@ body {
     color: var(--cell-path);
 }
 .stat-sub {
-    font:
-        400 10px/1 var(--font-mono);
+    font: 400 10px/1 var(--font-mono);
     color: var(--fg-subtle);
     margin-top: 4px;
 }
@@ -710,9 +701,8 @@ body {
     height: 30px;
     padding: 0 12px;
     white-space: nowrap;
-    border-radius: var(--radius-md);
-    font:
-        500 12px/1 var(--font-sans);
+    border-radius: var(--radius-xl);
+    font: 500 12px/1 var(--font-sans);
     cursor: pointer;
     border: 1px solid transparent;
     transition:
@@ -769,8 +759,7 @@ body {
         0 1px 0 color-mix(in oklab, var(--fg) 4%, transparent) inset,
         var(--shadow-lg);
     color: var(--fg-muted);
-    font:
-        500 12px/1 var(--font-sans);
+    font: 500 12px/1 var(--font-sans);
     cursor: pointer;
     transition:
         color 0.15s var(--ease),
