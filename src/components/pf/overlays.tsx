@@ -424,9 +424,7 @@ export function Legend() {
                 {items.map((it) => (
                     <div className="legend-row" key={it.label}>
                         <span className="swatch" style={{ background: it.c }}>
-                            {"icon" in it && it.icon && (
-                                <it.icon size={10} strokeWidth={2.5} />
-                            )}
+                            {"icon" in it && it.icon && <it.icon size={10} strokeWidth={2.5} />}
                         </span>
                         <span>{it.label}</span>
                     </div>
@@ -481,10 +479,7 @@ export function ActionBar({
                     onChange={(e) => onScrub(Number(e.target.value) / 1000)}
                     disabled={!canScrub}
                 />
-                <div
-                    className="timeline-fill"
-                    style={{ width: progress * 100 + "%" }}
-                />
+                <div className="timeline-fill" style={{ width: progress * 100 + "%" }} />
             </div>
             <div className="actionbar">
                 {running ? (
@@ -527,13 +522,7 @@ export function ActionBar({
 
 /* -------------------- Utility dock -------------------- */
 
-export function OverlayToggle({
-    uiHidden,
-    onToggle,
-}: {
-    uiHidden: boolean;
-    onToggle: () => void;
-}) {
+export function OverlayToggle({ uiHidden, onToggle }: { uiHidden: boolean; onToggle: () => void }) {
     return (
         <button
             type="button"
@@ -617,12 +606,7 @@ export function ShortcutsCard({ onClose }: { onClose: () => void }) {
         <div className="shortcuts-card panel">
             <div className="shortcuts-head">
                 <span className="eyebrow">Shortcuts</span>
-                <button
-                    type="button"
-                    className="icon-btn sm"
-                    onClick={onClose}
-                    aria-label="Close"
-                >
+                <button type="button" className="icon-btn sm" onClick={onClose} aria-label="Close">
                     <XIcon size={14} />
                 </button>
             </div>

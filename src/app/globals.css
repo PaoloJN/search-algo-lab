@@ -487,7 +487,7 @@ body {
     position: absolute;
     top: 20px;
     right: 20px;
-    width: 216px;
+    width: 252px;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -579,7 +579,7 @@ body {
 .legend-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 9px 12px;
+    gap: 10px 14px;
     margin: 12px 0 12px;
 }
 .legend-row {
@@ -587,6 +587,7 @@ body {
     align-items: center;
     gap: 8px;
     font-size: 12px;
+    line-height: 1;
     color: var(--fg-muted);
 }
 .swatch {
@@ -594,15 +595,20 @@ body {
     height: 16px;
     border-radius: var(--radius-sm);
     flex: none;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 0 0 1px oklch(1 0 0 / 0.06) inset;
 }
 .swatch svg {
+    display: block;
     color: #fff;
 }
 .legend-hint {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
     font-size: 11px;
     line-height: 1.5;
     color: var(--fg-subtle);
@@ -610,7 +616,8 @@ body {
     border-top: 1px solid var(--border-subtle);
 }
 .legend-hint svg {
-    vertical-align: -2px;
+    display: inline-block;
+    flex: none;
     color: var(--fg-muted);
 }
 
