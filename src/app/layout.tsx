@@ -6,8 +6,8 @@ import { Provider as JotaiProvider } from "jotai";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
-const SITE_URL = "https://search-algo-lab.vercel.app";
-const TITLE = "search-algo-lab · Pathfinding visualizer";
+const SITE_URL = "https://pathfinding-lab.vercel.app";
+const TITLE = "pathfinding-lab · Pathfinding visualizer";
 const DESCRIPTION =
     "Interactive visualizer for pathfinding (A*, Dijkstra, BFS, DFS, Greedy) and maze-generation algorithms.";
 
@@ -15,10 +15,10 @@ export const metadata: Metadata = {
     metadataBase: new URL(SITE_URL),
     title: {
         default: TITLE,
-        template: "%s · search-algo-lab",
+        template: "%s · pathfinding-lab",
     },
     description: DESCRIPTION,
-    applicationName: "search-algo-lab",
+    applicationName: "pathfinding-lab",
     keywords: [
         "pathfinding",
         "visualizer",
@@ -55,13 +55,13 @@ export const metadata: Metadata = {
         url: SITE_URL,
         title: TITLE,
         description: DESCRIPTION,
-        siteName: "search-algo-lab",
+        siteName: "pathfinding-lab",
         images: [
             {
                 url: "/og.png",
                 width: 1200,
                 height: 630,
-                alt: "search-algo-lab — pathfinding and maze-generation visualizer",
+                alt: "pathfinding-lab — pathfinding and maze-generation visualizer",
             },
         ],
     },

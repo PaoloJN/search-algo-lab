@@ -1,6 +1,6 @@
 {
-    "name": "search-algo-lab",
-    "short_name": "search-algo-lab",
+    "name": "pathfinding-lab",
+    "short_name": "pathfinding-lab",
     "description": "Interactive visualizer for pathfinding (A*, Dijkstra, BFS, DFS, Greedy) and maze-generation algorithms.",
     "start_url": "/",
     "display": "standalone",

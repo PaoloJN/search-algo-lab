@@ -23,6 +23,7 @@ import {
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ALGORITHMS, type AlgoKey, type HeuristicKind, type MazeType } from "@/lib/pf-algorithms";
 import type { GridSize, MazeSpeed, Metrics, Speed, Status } from "@/atoms/pf";
+import Image from "next/image";
 
 /* -------------------- Primitives -------------------- */
 
@@ -228,9 +229,19 @@ export function ControlPanel(props: {
     return (
         <div className="panel control-panel">
             <div className="panel-head">
-                <div>
-                    <div className="app-name">search-algo-lab</div>
-                    <div className="app-sub">Pathfinding visualizer</div>
+                <div className="app-brand">
+                    <Image
+                        src="/logo.svg"
+                        alt="pathfinding-lab logo"
+                        width={32}
+                        height={32}
+                        className="app-logo"
+                        priority
+                    />
+                    <div className="app-brand-text">
+                        <div className="app-name">pathfinding-lab</div>
+                        <div className="app-sub">Pathfinding visualizer</div>
+                    </div>
                 </div>
                 <StatusPill status={status} />
             </div>

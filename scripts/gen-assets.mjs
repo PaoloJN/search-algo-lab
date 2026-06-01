@@ -77,7 +77,7 @@ async function writeOg() {
 
   <!-- Text block -->
   <g font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" fill="#ffffff">
-    <text x="448" y="290" font-size="76" font-weight="600" letter-spacing="-2">search-algo-lab</text>
+    <text x="448" y="290" font-size="76" font-weight="600" letter-spacing="-2">pathfinding-lab</text>
     <text x="448" y="346" font-size="30" font-weight="400" fill="rgba(255,255,255,0.6)">Pathfinding &amp; maze-generation visualizer</text>
     <text x="448" y="402" font-size="22" font-weight="500" fill="rgba(126,160,255,0.95)" letter-spacing="0.5">A* · Dijkstra · BFS · DFS · Greedy</text>
   </g>

@@ -1,5 +1,5 @@
 {
-  "name": "search-algo-lab",
+  "name": "pathfinding-lab",
   "version": "0.1.0",
   "private": true,
   "description": "Interactive visualizer for pathfinding (A*, Dijkstra, Bidirectional) and maze-generation algorithms.",

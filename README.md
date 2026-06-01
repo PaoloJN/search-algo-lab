@@ -1,8 +1,8 @@
-# search-algo-lab
+# pathfinding-lab
 
 An interactive visualizer for pathfinding and maze-generation algorithms. Step through A\*, Dijkstra, and Bidirectional search on grids you build yourself, or watch classic maze generators carve the canvas in real time.
 
-**Live demo:** [search-algo-lab.vercel.app](https://search-algo-lab.vercel.app)
+**Live demo:** [pathfinding-lab.vercel.app](https://pathfinding-lab.vercel.app)
 
 ## Features
 
@@ -43,8 +43,8 @@ An interactive visualizer for pathfinding and maze-generation algorithms. Step t
 Requires [Bun](https://bun.sh).
 
 ```bash
-git clone https://github.com/PaoloJN/search-algo-lab.git
-cd search-algo-lab
+git clone https://github.com/PaoloJN/pathfinding-lab.git
+cd pathfinding-lab
 bun install
 bun run dev
 ```
