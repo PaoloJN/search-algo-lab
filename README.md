@@ -1,41 +1,54 @@
+<p align="center">
+  <img src="public/logo.svg" alt="pathfinding-lab logo" width="120" />
+</p>
 
+<h1 align="center">pathfinding-lab</h1>
 
-<h1>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="public/logo-light.svg">
-    <img src="public/icon-192.png" alt="" width="40" align="left" style="vertical-align: middle;">
-  </picture>
-  &nbsp;Pathfinding Lab
-</h1>
+<p align="center">
+  An interactive visualizer for pathfinding and maze-generation algorithms.
+</p>
 
+<p align="center">
+  <a href="https://pathfinding.paolonessim.com">Live demo</a>
+  &middot;
+  <a href="#features">Features</a>
+  &middot;
+  <a href="#running-locally">Running locally</a>
+</p>
 
-An interactive visualizer for pathfinding and maze-generation algorithms. Step through A\*, Dijkstra, and Bidirectional search on grids you build yourself, or watch classic maze generators carve the canvas in real time.
+---
 
+Step through A\*, Dijkstra, Greedy best-first, BFS, and DFS searches on grids you build yourself, or watch six classic maze generators carve the canvas in real time. Scrub the timeline frame-by-frame, drag the start and goal anywhere, draw or erase walls live.
 
 ## Features
 
-**Pathfinding**
+**Pathfinding algorithms**
 
-- A\* Search
-- Dijkstra's Algorithm
-- Bidirectional Search
+- A\* Search (with Manhattan / Euclidean / Chebyshev heuristics)
+- Dijkstra
+- Greedy best-first
+- Breadth-first (BFS)
+- Depth-first (DFS)
 
 **Maze generation**
 
-- Recursive Division
-- Binary Tree
+- Recursive division
+- Binary tree
 - Sidewinder
-- Prim's Algorithm
-- Hunt and Kill
-- Random Map
+- Prim's
+- Hunt and kill
+- Random fill
 
 **Interactive controls**
 
-- Left-click + drag to draw walls; right-click to erase
-- Drag the start and end markers anywhere on the grid
-- Adjustable path and maze animation speed (Slow / Normal / Fast / Instant)
-- Two grid densities
-- Dragging start/end after a run replays the algorithm instantly
+- Draw walls with left-click + drag; erase by clicking again
+- Drag the flag and target anywhere — paths re-solve instantly
+- Play, pause, step forward, step back, or scrub the timeline
+- Three grid densities (Small / Medium / Large)
+- Four animation speeds (Slow / Normal / Fast / Instant)
+- Optional diagonal moves
+- Light / dark / system theme
+- Keyboard shortcuts (Space, S, B, C, R, M, X, H, Tab)
 
 ## Tech stack
 
@@ -66,13 +79,14 @@ bun run dev          # start the dev server
 bun run build        # production build
 bun run lint         # run the linter
 bun run format       # format with prettier
+bun run gen-assets   # regenerate favicons + OG image from public/logo.svg
 ```
 
 Deployed on Vercel.
 
 ## Credits
 
-Based on [TylerMommsen/pathfinding-visualizer](https://github.com/TylerMommsen/pathfinding-visualizer). This version is rebuilt on top of Next.js 14, Tailwind v4, shadcn/ui, and Jotai, with cleaned-up types and a refreshed UI.
+Originally inspired by [TylerMommsen/pathfinding-visualizer](https://github.com/TylerMommsen/pathfinding-visualizer). This version is a rebuild on top of Next.js 14, Tailwind v4, shadcn/ui, and Jotai, with the UI designed in [Claude Design](https://claude.ai/design).
 
 ## License
 
